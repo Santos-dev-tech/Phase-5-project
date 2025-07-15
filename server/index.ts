@@ -38,6 +38,7 @@ export function createServer() {
   app.get("/api/menu/today", getTodaysMenu);
   app.get("/api/meals", getMealOptions);
   app.post("/api/meals", addMealOption);
+  app.delete("/api/meals/:mealId", deleteMealOption);
 
   // Orders
   app.post("/api/orders", placeOrder);
