@@ -13,6 +13,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Layout from "./components/Layout";
+import { AppProvider } from "./contexts/AppContext";
 
 const queryClient = new QueryClient();
 
