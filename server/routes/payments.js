@@ -1,10 +1,10 @@
-const mpesaService = require("../services/mpesa");
+import mpesaService from "../services/mpesa.js";
 
 // Store payment transactions in memory (use database in production)
 let paymentTransactions = [];
 
 // Initiate M-Pesa payment
-const initiateMpesaPayment = async (req, res) => {
+export const initiateMpesaPayment = async (req, res) => {
   try {
     const { customerId, customerName, mealId, phoneNumber, amount } = req.body;
 
@@ -88,7 +88,7 @@ const initiateMpesaPayment = async (req, res) => {
 };
 
 // Check payment status
-const checkPaymentStatus = async (req, res) => {
+export const checkPaymentStatus = async (req, res) => {
   try {
     const { checkoutRequestId } = req.params;
 
@@ -144,7 +144,7 @@ const checkPaymentStatus = async (req, res) => {
 };
 
 // M-Pesa callback handler
-const handleMpesaCallback = (req, res) => {
+export const handleMpesaCallback = (req, res) => {
   try {
     console.log("M-Pesa Callback received:", JSON.stringify(req.body, null, 2));
 
@@ -191,7 +191,7 @@ const handleMpesaCallback = (req, res) => {
 };
 
 // Get payment transactions (admin)
-const getPaymentTransactions = (req, res) => {
+export const getPaymentTransactions = (req, res) => {
   try {
     res.json({
       success: true,
@@ -209,7 +209,7 @@ const getPaymentTransactions = (req, res) => {
 };
 
 // Test M-Pesa configuration
-const testMpesaConfig = (req, res) => {
+export const testMpesaConfig = (req, res) => {
   try {
     res.json({
       success: true,
@@ -227,12 +227,4 @@ const testMpesaConfig = (req, res) => {
       message: "M-Pesa configuration error",
     });
   }
-};
-
-module.exports = {
-  initiateMpesaPayment,
-  checkPaymentStatus,
-  handleMpesaCallback,
-  getPaymentTransactions,
-  testMpesaConfig,
 };
