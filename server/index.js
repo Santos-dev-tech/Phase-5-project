@@ -19,6 +19,7 @@ import {
   handleMpesaCallback,
   getPaymentTransactions,
   testMpesaConfig,
+  verifyPayment,
 } from "./routes/payments.js";
 
 export function createServer() {
@@ -31,7 +32,7 @@ export function createServer() {
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {
-    res.json({ message: "Hello from Express server v2!" });
+    res.json({ message: "Mealy Restaurant API v2.0 - M-Pesa Ready!" });
   });
 
   app.get("/api/demo", handleDemo);
@@ -53,12 +54,24 @@ export function createServer() {
   app.put("/api/orders/:orderId/status", updateOrderStatus);
   app.get("/api/customers/:customerId/orders", getCustomerOrders);
 
-  // M-Pesa Payment routes
+  // Real M-Pesa Payment routes
   app.post("/api/payments/mpesa/initiate", initiateMpesaPayment);
   app.get("/api/payments/mpesa/status/:checkoutRequestId", checkPaymentStatus);
   app.post("/api/payments/mpesa/callback", handleMpesaCallback);
   app.get("/api/payments/transactions", getPaymentTransactions);
   app.get("/api/payments/mpesa/test", testMpesaConfig);
+  app.post("/api/payments/mpesa/verify", verifyPayment);
+
+  // Health check endpoint
+  app.get("/api/health", (_req, res) => {
+    res.json({
+      status: "healthy",
+      timestamp: new Date().toISOString(),
+      service: "Mealy Restaurant API",
+      mpesa: "ready",
+      businessAccount: "0746013145",
+    });
+  });
 
   return app;
 }
