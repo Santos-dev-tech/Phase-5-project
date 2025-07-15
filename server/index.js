@@ -1,7 +1,7 @@
-const express = require("express");
-const cors = require("cors");
-const { handleDemo } = require("./routes/demo");
-const {
+import express from "express";
+import cors from "cors";
+import { handleDemo } from "./routes/demo.js";
+import {
   getTodaysMenu,
   getMealOptions,
   addMealOption,
@@ -12,16 +12,16 @@ const {
   getCustomerOrders,
   login,
   register,
-} = require("./routes/mealy");
-const {
+} from "./routes/mealy.js";
+import {
   initiateMpesaPayment,
   checkPaymentStatus,
   handleMpesaCallback,
   getPaymentTransactions,
   testMpesaConfig,
-} = require("./routes/payments");
+} from "./routes/payments.js";
 
-function createServer() {
+export function createServer() {
   const app = express();
 
   // Middleware
@@ -62,5 +62,3 @@ function createServer() {
 
   return app;
 }
-
-module.exports = { createServer };
