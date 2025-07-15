@@ -24,37 +24,38 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Layout>
-                <Index />
-              </Layout>
-            }
-          />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/dashboard"
-            element={
-              <Layout>
-                <Dashboard />
-              </Layout>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <Layout>
-                <AdminDashboard />
-              </Layout>
-            }
-          />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Layout>
+                  <Index />
+                </Layout>
+              }
+            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/dashboard"
+              element={
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <Layout>
+                  <AdminDashboard />
+                </Layout>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AppProvider>
   </QueryClientProvider>
 );
 
