@@ -1,46 +1,110 @@
 import { RequestHandler } from "express";
 
-// Mock data
+// Mock data with beautiful food images
 const mealOptions = [
   {
     id: 1,
-    name: "Beef with Rice",
-    description: "Tender beef strips served with jasmine rice and vegetables",
-    price: 12.99,
+    name: "Beef with Jasmine Rice",
+    description:
+      "Tender beef strips marinated in herbs, served with fragrant jasmine rice and seasonal vegetables",
+    price: 15.99,
     rating: 4.8,
     prepTime: "25-30 min",
     category: "Main Course",
     available: true,
+    image:
+      "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&h=300&fit=crop&auto=format",
   },
   {
     id: 2,
-    name: "Chicken Stir Fry",
-    description: "Fresh chicken with mixed vegetables in savory sauce",
-    price: 10.99,
+    name: "Chicken Teriyaki Stir Fry",
+    description:
+      "Succulent chicken breast with fresh vegetables in our signature teriyaki glaze",
+    price: 13.99,
     rating: 4.6,
     prepTime: "20-25 min",
     category: "Main Course",
     available: true,
+    image:
+      "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=500&h=300&fit=crop&auto=format",
   },
   {
     id: 3,
-    name: "Fish and Chips",
-    description: "Crispy battered fish with golden fries and tartar sauce",
-    price: 13.99,
+    name: "Crispy Fish & Chips",
+    description:
+      "Beer-battered fish fillet with golden fries, mushy peas, and house-made tartar sauce",
+    price: 16.99,
     rating: 4.7,
     prepTime: "30-35 min",
     category: "Main Course",
     available: false,
+    image:
+      "https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?w=500&h=300&fit=crop&auto=format",
   },
   {
     id: 4,
-    name: "Vegetarian Pasta",
-    description: "Creamy pasta with seasonal vegetables and herbs",
-    price: 9.99,
+    name: "Mediterranean Pasta",
+    description:
+      "Fresh pasta with sun-dried tomatoes, olives, feta cheese, and herbs in olive oil",
+    price: 12.99,
     rating: 4.5,
     prepTime: "15-20 min",
     category: "Main Course",
     available: true,
+    image:
+      "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=500&h=300&fit=crop&auto=format",
+  },
+  {
+    id: 5,
+    name: "Grilled Salmon",
+    description:
+      "Atlantic salmon fillet with lemon butter sauce, roasted vegetables, and quinoa",
+    price: 18.99,
+    rating: 4.9,
+    prepTime: "25-30 min",
+    category: "Main Course",
+    available: true,
+    image:
+      "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=500&h=300&fit=crop&auto=format",
+  },
+  {
+    id: 6,
+    name: "BBQ Pork Ribs",
+    description:
+      "Slow-cooked pork ribs with smoky BBQ sauce, coleslaw, and sweet potato fries",
+    price: 19.99,
+    rating: 4.8,
+    prepTime: "35-40 min",
+    category: "Main Course",
+    available: true,
+    image:
+      "https://images.unsplash.com/photo-1544025162-d76694265947?w=500&h=300&fit=crop&auto=format",
+  },
+  {
+    id: 7,
+    name: "Vegetarian Buddha Bowl",
+    description:
+      "Quinoa, roasted vegetables, avocado, chickpeas with tahini dressing",
+    price: 11.99,
+    rating: 4.4,
+    prepTime: "20-25 min",
+    category: "Vegetarian",
+    available: true,
+    image:
+      "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&h=300&fit=crop&auto=format",
+  },
+  {
+    id: 8,
+    name: "Chocolate Lava Cake",
+    description:
+      "Warm chocolate cake with molten center, served with vanilla ice cream",
+    price: 7.99,
+    rating: 4.9,
+    prepTime: "15-20 min",
+    category: "Dessert",
+    available: true,
+    image:
+      "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500&h=300&fit=crop&auto=format",
   },
 ];
 
@@ -48,22 +112,32 @@ let orders = [
   {
     id: 1,
     customerId: 1,
-    customerName: "John Doe",
+    customerName: "Sarah Johnson",
     mealId: 1,
-    meal: "Beef with Rice",
-    price: 12.99,
+    meal: "Beef with Jasmine Rice",
+    price: 15.99,
     status: "preparing",
-    orderTime: new Date().toISOString(),
+    orderTime: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // 15 minutes ago
   },
   {
     id: 2,
     customerId: 2,
-    customerName: "Jane Smith",
+    customerName: "Mike Chen",
     mealId: 2,
-    meal: "Chicken Stir Fry",
-    price: 10.99,
+    meal: "Chicken Teriyaki Stir Fry",
+    price: 13.99,
     status: "ready",
-    orderTime: new Date().toISOString(),
+    orderTime: new Date(Date.now() - 25 * 60 * 1000).toISOString(), // 25 minutes ago
+  },
+  {
+    id: 3,
+    customerId: 3,
+    customerName: "Emma Davis",
+    mealId: 5,
+    meal: "Grilled Salmon",
+    price: 18.99,
+    status: "delivered",
+    orderTime: new Date(Date.now() - 45 * 60 * 1000).toISOString(), // 45 minutes ago
   },
 ];
 
@@ -86,7 +160,7 @@ export const getMealOptions: RequestHandler = (req, res) => {
 
 // Add new meal option (admin)
 export const addMealOption: RequestHandler = (req, res) => {
-  const { name, description, price, prepTime, category } = req.body;
+  const { name, description, price, prepTime, category, image } = req.body;
 
   const newMeal = {
     id: mealOptions.length + 1,
@@ -97,6 +171,9 @@ export const addMealOption: RequestHandler = (req, res) => {
     prepTime,
     category,
     available: true,
+    image:
+      image ||
+      "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&h=300&fit=crop&auto=format",
   };
 
   mealOptions.push(newMeal);
@@ -105,6 +182,26 @@ export const addMealOption: RequestHandler = (req, res) => {
     success: true,
     data: newMeal,
     message: "Meal added successfully",
+  });
+};
+
+// Delete meal option (admin)
+export const deleteMealOption: RequestHandler = (req, res) => {
+  const { mealId } = req.params;
+  const index = mealOptions.findIndex((meal) => meal.id === parseInt(mealId));
+
+  if (index === -1) {
+    return res.status(404).json({
+      success: false,
+      message: "Meal not found",
+    });
+  }
+
+  mealOptions.splice(index, 1);
+
+  res.json({
+    success: true,
+    message: "Meal deleted successfully",
   });
 };
 
@@ -127,7 +224,7 @@ export const placeOrder: RequestHandler = (req, res) => {
     mealId,
     meal: meal.name,
     price: meal.price,
-    status: "preparing",
+    status: "preparing" as const,
     orderTime: new Date().toISOString(),
   };
 
@@ -207,7 +304,7 @@ export const login: RequestHandler = (req, res) => {
       data: {
         id: 1,
         email: "admin@demo.com",
-        name: "Admin User",
+        name: "Chef Martinez",
         role: "admin",
         token: "mock-admin-token",
       },
@@ -218,7 +315,7 @@ export const login: RequestHandler = (req, res) => {
       data: {
         id: 2,
         email: "customer@demo.com",
-        name: "Customer User",
+        name: "Alex Thompson",
         role: "customer",
         token: "mock-customer-token",
       },
