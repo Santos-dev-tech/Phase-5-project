@@ -5,6 +5,7 @@ import {
   getTodaysMenu,
   getMealOptions,
   addMealOption,
+  deleteMealOption,
   placeOrder,
   getOrders,
   updateOrderStatus,
