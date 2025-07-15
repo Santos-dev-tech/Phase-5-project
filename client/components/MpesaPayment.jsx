@@ -17,6 +17,8 @@ import {
   AlertCircle,
   Loader2,
   DollarSign,
+  Zap,
+  Shield,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -25,6 +27,7 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState("idle"); // idle, processing, success, failed
   const [checkoutRequestId, setCheckoutRequestId] = useState(null);
+  const [paymentMessage, setPaymentMessage] = useState("");
 
   useEffect(() => {
     if (!isOpen) {
@@ -33,6 +36,7 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
       setIsProcessing(false);
       setPaymentStatus("idle");
       setCheckoutRequestId(null);
+      setPaymentMessage("");
     }
   }, [isOpen]);
 
@@ -65,6 +69,8 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
     setPaymentStatus("processing");
 
     try {
+      console.log("🚀 Initiating REAL M-Pesa payment...");
+
       const response = await fetch("/api/payments/mpesa/initiate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -81,18 +87,30 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
 
       if (data.success) {
         setCheckoutRequestId(data.data.checkoutRequestId);
-        toast.success(
-          "Payment request sent! Please check your phone for the M-Pesa prompt.",
+        setPaymentMessage(
+          data.data.customerMessage ||
+            "Payment request sent to your phone. Please check your M-Pesa notifications.",
         );
+
+        toast.success(
+          "🚀 REAL M-Pesa prompt sent! Check your phone and enter your PIN.",
+        );
+
+        console.log("✅ STK Push sent successfully");
+        console.log("💰 Funds will be deposited to: 0746013145");
 
         // Start polling for payment status
         pollPaymentStatus(data.data.checkoutRequestId);
       } else {
         setPaymentStatus("failed");
+        setPaymentMessage(
+          data.message || "Failed to send payment request to your phone",
+        );
         toast.error(data.message || "Failed to initiate payment");
       }
     } catch (error) {
       setPaymentStatus("failed");
+      setPaymentMessage("Network error. Please check your connection.");
       toast.error("Failed to initiate payment. Please try again.");
     } finally {
       setIsProcessing(false);
@@ -100,7 +118,7 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
   };
 
   const pollPaymentStatus = async (requestId) => {
-    const maxAttempts = 20; // Poll for 2 minutes (20 * 6 seconds)
+    const maxAttempts = 30; // Poll for 3 minutes (30 * 6 seconds)
     let attempts = 0;
 
     const checkStatus = async () => {
@@ -108,15 +126,42 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
         const response = await fetch(`/api/payments/mpesa/status/${requestId}`);
         const data = await response.json();
 
-        if (data.success && data.data.status === "completed") {
-          setPaymentStatus("success");
-          toast.success("Payment successful! Your order has been placed.");
-          onPaymentSuccess({
-            checkoutRequestId: requestId,
-            mpesaReceiptNumber: data.data.mpesaReceiptNumber,
-            amount: data.data.amount,
-          });
-          return;
+        if (data.success) {
+          const status = data.data.status;
+          const resultDesc = data.data.resultDesc;
+
+          console.log(`📊 Payment status: ${status}`);
+
+          if (status === "completed") {
+            setPaymentStatus("success");
+            setPaymentMessage(
+              `Payment successful! Receipt: ${data.data.mpesaReceiptNumber}`,
+            );
+            toast.success(
+              "🎉 Payment completed! Money deposited to 0746013145",
+            );
+            onPaymentSuccess({
+              checkoutRequestId: requestId,
+              mpesaReceiptNumber: data.data.mpesaReceiptNumber,
+              amount: data.data.amount,
+            });
+            return;
+          } else if (status === "failed") {
+            setPaymentStatus("failed");
+            setPaymentMessage(resultDesc || "Payment failed");
+            toast.error(`Payment failed: ${resultDesc}`);
+            return;
+          } else if (status === "cancelled") {
+            setPaymentStatus("failed");
+            setPaymentMessage("Payment was cancelled by user");
+            toast.warning("Payment cancelled");
+            return;
+          } else if (status === "timeout") {
+            setPaymentStatus("timeout");
+            setPaymentMessage("Payment request timed out");
+            toast.warning("Payment timed out. Please try again.");
+            return;
+          }
         }
 
         attempts++;
@@ -124,6 +169,9 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
           setTimeout(checkStatus, 6000); // Check every 6 seconds
         } else {
           setPaymentStatus("timeout");
+          setPaymentMessage(
+            "Payment verification timed out. Contact support if money was deducted.",
+          );
           toast.warning(
             "Payment verification timed out. Please contact support if money was deducted.",
           );
@@ -134,6 +182,7 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
           setTimeout(checkStatus, 6000);
         } else {
           setPaymentStatus("failed");
+          setPaymentMessage("Failed to verify payment status.");
           toast.error("Failed to verify payment status.");
         }
       }
@@ -153,29 +202,31 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
   const getStatusIcon = () => {
     switch (paymentStatus) {
       case "processing":
-        return <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />;
+        return <Loader2 className="w-8 h-8 text-green-500 animate-spin" />;
       case "success":
         return <CheckCircle className="w-8 h-8 text-green-500" />;
       case "failed":
       case "timeout":
         return <AlertCircle className="w-8 h-8 text-red-500" />;
       default:
-        return <Smartphone className="w-8 h-8 text-orange-500" />;
+        return <Smartphone className="w-8 h-8 text-green-600" />;
     }
   };
 
   const getStatusMessage = () => {
+    if (paymentMessage) return paymentMessage;
+
     switch (paymentStatus) {
       case "processing":
         return "Check your phone for the M-Pesa payment prompt...";
       case "success":
-        return "Payment completed successfully!";
+        return "Payment completed successfully! Funds deposited to 0746013145";
       case "failed":
         return "Payment failed. Please try again.";
       case "timeout":
         return "Payment verification timed out.";
       default:
-        return "Enter your M-Pesa number to pay for your order";
+        return "Enter your M-Pesa number for instant payment";
     }
   };
 
@@ -188,10 +239,26 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
           <DialogTitle className="flex items-center space-x-2">
             <CreditCard className="w-6 h-6 text-green-600" />
             <span>M-Pesa Payment</span>
+            <Badge className="bg-green-100 text-green-800 text-xs">LIVE</Badge>
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Live Payment Notice */}
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-center space-x-2 mb-2">
+              <Zap className="w-5 h-5 text-green-600" />
+              <span className="font-semibold text-green-900">
+                Real M-Pesa Payment
+              </span>
+            </div>
+            <p className="text-green-700 text-sm">
+              This will send an actual payment request to your phone. Funds will
+              be deposited to{" "}
+              <strong className="text-green-900">0746013145</strong>
+            </p>
+          </div>
+
           {/* Order Summary */}
           <Card className="border-green-200 bg-green-50/50">
             <CardContent className="p-4">
@@ -211,13 +278,19 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
                   </span>
                 </div>
               </div>
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-sm text-gray-500">Recipient:</span>
+                <span className="text-sm font-semibold text-green-700">
+                  0746013145
+                </span>
+              </div>
             </CardContent>
           </Card>
 
           {/* Payment Status */}
           <div className="text-center py-4">
             <div className="mb-3">{getStatusIcon()}</div>
-            <p className="text-gray-700">{getStatusMessage()}</p>
+            <p className="text-gray-700 font-medium">{getStatusMessage()}</p>
           </div>
 
           {/* Phone Number Input */}
@@ -240,9 +313,12 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
                     <Smartphone className="w-5 h-5 text-gray-400" />
                   </div>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Enter your Safaricom number (e.g., 0712345678)
-                </p>
+                <div className="flex items-center space-x-2 mt-2">
+                  <Shield className="w-4 h-4 text-green-600" />
+                  <p className="text-xs text-green-600">
+                    Secure Safaricom M-Pesa payment
+                  </p>
+                </div>
               </div>
 
               <div className="flex space-x-3">
@@ -262,7 +338,7 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
                   {isProcessing ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Processing...
+                      Sending...
                     </>
                   ) : (
                     <>
@@ -278,19 +354,18 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
           {/* Processing State */}
           {paymentStatus === "processing" && (
             <div className="text-center space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-semibold text-blue-900 mb-2">
-                  Payment in Progress
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <h4 className="font-semibold text-green-900 mb-2">
+                  Payment Request Sent!
                 </h4>
-                <p className="text-blue-700 text-sm mb-3">
-                  A payment request has been sent to{" "}
-                  <strong>{phoneNumber}</strong>
+                <p className="text-green-700 text-sm mb-3">
+                  M-Pesa prompt sent to <strong>{phoneNumber}</strong>
                 </p>
-                <div className="text-xs text-blue-600">
-                  • Check your phone for the M-Pesa prompt
-                  <br />
-                  • Enter your M-Pesa PIN
-                  <br />• Your order will be confirmed automatically
+                <div className="text-xs text-green-600 space-y-1">
+                  <div>📱 Check your phone for M-Pesa notification</div>
+                  <div>🔢 Enter your M-Pesa PIN</div>
+                  <div>💰 Funds will go to: 0746013145</div>
+                  <div>⚡ Payment will be confirmed automatically</div>
                 </div>
               </div>
               <Button
@@ -299,7 +374,7 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
                 className="w-full"
                 size="sm"
               >
-                Cancel & Close
+                Continue Shopping
               </Button>
             </div>
           )}
@@ -309,10 +384,13 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
             <div className="text-center space-y-4">
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <h4 className="font-semibold text-green-900 mb-2">
-                  Payment Successful!
+                  🎉 Payment Successful!
                 </h4>
-                <p className="text-green-700 text-sm">
+                <p className="text-green-700 text-sm mb-2">
                   Your order has been placed and payment confirmed.
+                </p>
+                <p className="text-xs text-green-600">
+                  💰 KSH {(meal.price * 100).toFixed(0)} deposited to 0746013145
                 </p>
               </div>
               <Button onClick={onClose} className="w-full bg-green-600">
@@ -327,13 +405,14 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <h4 className="font-semibold text-red-900 mb-2">
                   {paymentStatus === "timeout"
-                    ? "Payment Timeout"
-                    : "Payment Failed"}
+                    ? "⏰ Payment Timeout"
+                    : "❌ Payment Failed"}
                 </h4>
                 <p className="text-red-700 text-sm">
-                  {paymentStatus === "timeout"
-                    ? "We couldn't verify your payment. If money was deducted, please contact support."
-                    : "The payment could not be processed. Please try again."}
+                  {paymentMessage ||
+                    (paymentStatus === "timeout"
+                      ? "Payment request timed out. Please try again."
+                      : "The payment could not be processed. Please try again.")}
                 </p>
               </div>
               <div className="flex space-x-3">
@@ -344,8 +423,9 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
                   onClick={() => {
                     setPaymentStatus("idle");
                     setCheckoutRequestId(null);
+                    setPaymentMessage("");
                   }}
-                  className="flex-1"
+                  className="flex-1 bg-green-600"
                 >
                   Try Again
                 </Button>
