@@ -146,7 +146,7 @@ let orders = [
 ];
 
 // Get today's menu
-const getTodaysMenu = (req, res) => {
+export const getTodaysMenu = (req, res) => {
   res.json({
     success: true,
     data: mealOptions.filter((meal) => meal.available),
@@ -155,7 +155,7 @@ const getTodaysMenu = (req, res) => {
 };
 
 // Get all meal options (admin)
-const getMealOptions = (req, res) => {
+export const getMealOptions = (req, res) => {
   res.json({
     success: true,
     data: mealOptions,
@@ -163,7 +163,7 @@ const getMealOptions = (req, res) => {
 };
 
 // Add new meal option (admin)
-const addMealOption = (req, res) => {
+export const addMealOption = (req, res) => {
   const { name, description, price, prepTime, category, image } = req.body;
 
   const newMeal = {
@@ -190,7 +190,7 @@ const addMealOption = (req, res) => {
 };
 
 // Delete meal option (admin)
-const deleteMealOption = (req, res) => {
+export const deleteMealOption = (req, res) => {
   const { mealId } = req.params;
   const index = mealOptions.findIndex((meal) => meal.id === parseInt(mealId));
 
@@ -210,7 +210,7 @@ const deleteMealOption = (req, res) => {
 };
 
 // Place order
-const placeOrder = (req, res) => {
+export const placeOrder = (req, res) => {
   const { customerId, customerName, mealId, paymentRef } = req.body;
 
   const meal = mealOptions.find((m) => m.id === mealId);
@@ -244,7 +244,7 @@ const placeOrder = (req, res) => {
 };
 
 // Get orders (admin)
-const getOrders = (req, res) => {
+export const getOrders = (req, res) => {
   const { date } = req.query;
   let filteredOrders = orders;
 
@@ -262,7 +262,7 @@ const getOrders = (req, res) => {
 };
 
 // Update order status (admin)
-const updateOrderStatus = (req, res) => {
+export const updateOrderStatus = (req, res) => {
   const { orderId } = req.params;
   const { status } = req.body;
 
@@ -286,7 +286,7 @@ const updateOrderStatus = (req, res) => {
 };
 
 // Get customer's order history
-const getCustomerOrders = (req, res) => {
+export const getCustomerOrders = (req, res) => {
   const { customerId } = req.params;
 
   const customerOrders = orders.filter(
@@ -300,7 +300,7 @@ const getCustomerOrders = (req, res) => {
 };
 
 // Authentication endpoints (mock)
-const login = (req, res) => {
+export const login = (req, res) => {
   const { email, password } = req.body;
 
   // Mock authentication
@@ -334,7 +334,7 @@ const login = (req, res) => {
   }
 };
 
-const register = (req, res) => {
+export const register = (req, res) => {
   const { firstName, lastName, email, password, role } = req.body;
 
   // Mock registration
@@ -351,17 +351,4 @@ const register = (req, res) => {
     data: newUser,
     message: "Registration successful",
   });
-};
-
-module.exports = {
-  getTodaysMenu,
-  getMealOptions,
-  addMealOption,
-  deleteMealOption,
-  placeOrder,
-  getOrders,
-  updateOrderStatus,
-  getCustomerOrders,
-  login,
-  register,
 };
