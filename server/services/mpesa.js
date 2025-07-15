@@ -215,4 +215,4 @@ class MpesaService {
   }
 }
 
-module.exports = new MpesaService();
+export default new MpesaService();
