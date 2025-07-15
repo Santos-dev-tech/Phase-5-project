@@ -19,8 +19,8 @@ export default function Layout({ children }: LayoutProps) {
 
   // Mock authentication state - replace with real auth later
   const isAuthenticated = true;
-  const userRole: "customer" | "admin" = "customer"; // or "admin"
-  const userName = "John Doe";
+  const userRole: "customer" | "admin" = "admin"; // Switch to admin to show all features
+  const userName = "Admin User";
 
   const handleLogout = () => {
     // Add logout logic here
