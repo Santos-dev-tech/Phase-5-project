@@ -19,7 +19,7 @@ export default function Layout({ children }: LayoutProps) {
 
   // Mock authentication state - replace with real auth later
   const isAuthenticated = true;
-  const userRole = "customer"; // or "admin"
+  const userRole: "customer" | "admin" = "customer"; // or "admin"
   const userName = "John Doe";
 
   const handleLogout = () => {
