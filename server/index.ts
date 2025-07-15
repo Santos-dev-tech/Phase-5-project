@@ -1,6 +1,17 @@
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import {
+  getTodaysMenu,
+  getMealOptions,
+  addMealOption,
+  placeOrder,
+  getOrders,
+  updateOrderStatus,
+  getCustomerOrders,
+  login,
+  register,
+} from "./routes/mealy";
 
 export function createServer() {
   const app = express();
@@ -16,6 +27,22 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // Mealy API routes
+  // Authentication
+  app.post("/api/auth/login", login);
+  app.post("/api/auth/register", register);
+
+  // Menu & Meals
+  app.get("/api/menu/today", getTodaysMenu);
+  app.get("/api/meals", getMealOptions);
+  app.post("/api/meals", addMealOption);
+
+  // Orders
+  app.post("/api/orders", placeOrder);
+  app.get("/api/orders", getOrders);
+  app.put("/api/orders/:orderId/status", updateOrderStatus);
+  app.get("/api/customers/:customerId/orders", getCustomerOrders);
 
   return app;
 }
