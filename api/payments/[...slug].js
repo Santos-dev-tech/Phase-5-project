@@ -276,7 +276,7 @@ async function initiateMpesaSTKPush(
     Password: password,
     Timestamp: timestamp,
     TransactionType: "CustomerPayBillOnline",
-    Amount: Math.round(amount * 100), // Convert to cents
+    Amount: amount, // Amount should already be in correct format (whole KSH)
     PartyA: formattedPhone,
     PartyB: MPESA_SHORT_CODE,
     PhoneNumber: formattedPhone,
@@ -284,6 +284,13 @@ async function initiateMpesaSTKPush(
     AccountReference: accountReference,
     TransactionDesc: transactionDesc,
   };
+
+  console.log(`📤 STK Push Request:`, {
+    Amount: amount,
+    Phone: formattedPhone,
+    Reference: accountReference,
+    Description: transactionDesc,
+  });
 
   return new Promise((resolve, reject) => {
     const options = {
