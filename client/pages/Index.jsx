@@ -12,7 +12,6 @@ import {
   Smartphone,
   Award,
   Heart,
-  CreditCard,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -52,7 +51,7 @@ export default function Index() {
             <p className="text-xl lg:text-2xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
               Experience the finest dining with our chef-crafted meals, made
               from the freshest ingredients and delivered with love to your
-              doorstep. Now with convenient M-Pesa payments!
+              doorstep.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
               <Button
@@ -177,7 +176,7 @@ export default function Index() {
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               We're not just about food delivery - we're about creating
-              unforgettable culinary experiences with seamless M-Pesa payments.
+              unforgettable culinary experiences that bring joy to your table.
             </p>
           </motion.div>
 
@@ -200,10 +199,10 @@ export default function Index() {
                 delay: 0.2,
               },
               {
-                icon: CreditCard,
-                title: "M-Pesa Ready",
+                icon: Shield,
+                title: "Quality Promise",
                 description:
-                  "Pay instantly with M-Pesa - secure, fast, and convenient.",
+                  "100% satisfaction guarantee with premium ingredients.",
                 color: "from-green-500 to-emerald-500",
                 delay: 0.3,
               },
@@ -254,7 +253,7 @@ export default function Index() {
               { number: "15K+", label: "Happy Customers", icon: Users },
               { number: "100+", label: "Signature Dishes", icon: ChefHat },
               { number: "4.9", label: "Customer Rating", icon: Star },
-              { number: "99%", label: "M-Pesa Success", icon: CreditCard },
+              { number: "24/7", label: "Service Available", icon: Clock },
             ].map((stat, index) => (
               <motion.div
                 key={index}
@@ -307,8 +306,7 @@ export default function Index() {
             </h2>
             <p className="text-xl text-gray-300 leading-relaxed">
               Join thousands of food lovers who trust us with their daily
-              culinary adventures. Pay securely with M-Pesa and enjoy seamless
-              ordering.
+              culinary adventures. Your taste buds will thank you.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
               <Button
