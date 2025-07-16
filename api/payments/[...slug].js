@@ -65,13 +65,20 @@ export default async function handler(req, res) {
         // Get M-Pesa access token
         const accessToken = await getMpesaAccessToken();
 
+        // Convert amount to proper KSH format (from decimal to whole number)
+        const kshAmount = Math.round(amount * 100);
+
+        console.log(`💰 Sending STK Push:`);
+        console.log(`   Amount: KSH ${kshAmount} (from ${amount})`);
+        console.log(`   Phone: ${phoneNumber}`);
+
         // Initiate STK Push
         const stkResult = await initiateMpesaSTKPush(
           accessToken,
           phoneNumber,
-          amount,
+          kshAmount,
           `ORDER_${mealId || Date.now()}`,
-          `Payment for ${customerName || "Customer"}`,
+          `Mealy Food Order - KSH ${kshAmount}`,
         );
 
         if (stkResult.success) {
