@@ -43,14 +43,39 @@ const googleProvider = new GoogleAuthProvider();
 export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
 export const logout = () => signOut(auth);
 
+// Wait for auth to be ready
+export const waitForAuth = () => {
+  return new Promise((resolve) => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      unsubscribe();
+      resolve(user);
+    });
+  });
+};
+
+// Check if user is authenticated
+export const isAuthenticated = () => {
+  return auth.currentUser !== null;
+};
+
+// Get current user ID
+export const getCurrentUserId = () => {
+  return auth.currentUser?.uid || null;
+};
+
 // Firestore functions
 export const addTransaction = async (transactionData) => {
   try {
+    // Wait for auth to be ready
+    await waitForAuth();
+
     console.log("🔐 Current auth user:", auth.currentUser);
     console.log("📄 Transaction data:", transactionData);
 
     if (!auth.currentUser) {
-      throw new Error("User not authenticated");
+      throw new Error(
+        "User not authenticated. Please sign in with Google first.",
+      );
     }
 
     const docRef = await addDoc(collection(db, "transactions"), {
@@ -87,11 +112,16 @@ export const getUserTransactions = async (userId) => {
 
 export const addOrder = async (orderData) => {
   try {
+    // Wait for auth to be ready
+    await waitForAuth();
+
     console.log("🔐 Current auth user:", auth.currentUser);
     console.log("📄 Order data:", orderData);
 
     if (!auth.currentUser) {
-      throw new Error("User not authenticated");
+      throw new Error(
+        "User not authenticated. Please sign in with Google first.",
+      );
     }
 
     const docRef = await addDoc(collection(db, "orders"), {
