@@ -151,50 +151,6 @@ export const AppProvider = ({ children }) => {
       }
     },
 
-    placeOrderWithPayment: async (mealId, paymentData) => {
-      if (!state.user) return;
-      dispatch({ type: "SET_LOADING", payload: true });
-      try {
-        // Place the order with payment data
-        const orderResponse = await fetch("/api/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            customerId: state.user.id,
-            customerName: state.user.name,
-            mealId,
-            paymentData: {
-              phoneNumber: paymentData.phoneNumber,
-              amount:
-                paymentData.amount ||
-                state.todaysMenu.find((m) => m.id === mealId)?.price,
-              checkoutRequestId: paymentData.checkoutRequestId,
-              mpesaReceiptNumber: paymentData.mpesaReceiptNumber,
-            },
-            paymentStatus: paymentData.mpesaReceiptNumber
-              ? "completed"
-              : "pending",
-          }),
-        });
-
-        const orderData = await orderResponse.json();
-        if (orderData.success) {
-          dispatch({ type: "ADD_ORDER", payload: orderData.data });
-          if (paymentData.mpesaReceiptNumber) {
-            toast.success("Order placed and payment confirmed!");
-          } else {
-            toast.success("Order placed! Payment confirmation pending...");
-          }
-        } else {
-          toast.error(orderData.message || "Order failed");
-        }
-      } catch (error) {
-        toast.error("Order failed");
-      } finally {
-        dispatch({ type: "SET_LOADING", payload: false });
-      }
-    },
-
     updateOrderStatus: async (orderId, status) => {
       try {
         const response = await fetch(`/api/orders/${orderId}/status`, {
