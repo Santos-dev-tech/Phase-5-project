@@ -118,7 +118,7 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
   };
 
   const pollPaymentStatus = async (requestId) => {
-    const maxAttempts = 30; // Poll for 3 minutes (30 * 6 seconds)
+    const maxAttempts = 40; // Poll for 4 minutes (40 * 6 seconds = 240 seconds)
     let attempts = 0;
 
     const checkStatus = async () => {
