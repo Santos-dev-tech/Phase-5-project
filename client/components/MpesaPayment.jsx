@@ -79,7 +79,7 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
           customerName: "Customer", // This should come from user context
           mealId: meal.id,
           phoneNumber: phoneNumber.replace(/\D/g, ""),
-          amount: meal.price,
+          amount: Math.round(meal.price * 100), // Convert USD to KSH
         }),
       });
 
