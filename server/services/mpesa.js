@@ -34,7 +34,7 @@ class MpesaService {
     this.businessPhoneNumber = "254746013145";
     this.callbackUrl =
       process.env.MPESA_CALLBACK_URL ||
-      "http://localhost:8080/api/payments/mpesa/callback";
+      "https://your-domain.vercel.app/api/payments/mpesa/callback";
 
     // Cache for access token
     this.accessToken = null;
