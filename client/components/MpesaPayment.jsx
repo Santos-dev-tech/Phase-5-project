@@ -386,12 +386,13 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
                     </span>
                   </div>
                   <div className="text-xs text-yellow-700 space-y-1">
-                    <div>⏳ Please complete payment within 3 minutes</div>
+                    <div>⏳ You have 4 minutes to complete payment</div>
                     <div>📱 Check your phone for M-Pesa notification</div>
                     <div>🔢 Enter your M-Pesa PIN when prompted</div>
                     <div>
                       ✅ Payment will automatically confirm when completed
                     </div>
+                    <div>💰 Amount: KSH {(meal.price * 100).toFixed(0)}</div>
                   </div>
                 </div>
                 <div className="text-xs text-green-600 space-y-1">
@@ -418,7 +419,7 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
             <div className="text-center space-y-4">
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <h4 className="font-semibold text-green-900 mb-2">
-                  ��� Payment Successful!
+                  🎉 Payment Successful!
                 </h4>
                 <p className="text-green-700 text-sm mb-2">
                   Your order has been placed and payment confirmed.
