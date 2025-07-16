@@ -245,9 +245,11 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
-            <CreditCard className="w-6 h-6 text-green-600" />
-            <span>M-Pesa Payment</span>
-            <Badge className="bg-green-100 text-green-800 text-xs">LIVE</Badge>
+            <CreditCard className="w-6 h-6 text-red-600" />
+            <span>LIVE M-Pesa Payment</span>
+            <Badge className="bg-red-100 text-red-800 text-xs font-bold">
+              REAL MONEY
+            </Badge>
           </DialogTitle>
         </DialogHeader>
 
