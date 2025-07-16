@@ -94,7 +94,7 @@ class MpesaService {
       if (response.access_token) {
         this.accessToken = response.access_token;
         this.tokenExpiry = new Date(Date.now() + 55 * 60 * 1000);
-        console.log("✅ Real M-Pesa access token obtained");
+        console.log(`✅ ${this.environment} M-Pesa access token obtained`);
         return this.accessToken;
       } else {
         throw new Error("No access token in response");
