@@ -310,8 +310,8 @@ export default function Dashboard() {
                           "Processing..."
                         ) : (
                           <>
-                            <ShoppingCart className="w-5 h-5 mr-2" />
-                            Order Now
+                            <Smartphone className="w-5 h-5 mr-2" />
+                            Pay with M-Pesa
                           </>
                         )}
                       </Button>
