@@ -369,12 +369,20 @@ async function queryMpesaSTKStatus(accessToken, checkoutRequestId) {
           let status = "pending";
           if (response.ResultCode === "0") {
             status = "completed";
+            console.log(`🎉 Payment completed successfully!`);
           } else if (response.ResultCode === "1032") {
             status = "cancelled";
+            console.log(`🚫 Payment cancelled by user`);
           } else if (response.ResultCode === "1037") {
             status = "timeout";
-          } else if (response.ResultCode) {
+            console.log(`⏰ Payment timed out`);
+          } else if (response.ResultCode && response.ResultCode !== "") {
             status = "failed";
+            console.log(`❌ Payment failed: ${response.ResultDesc}`);
+          } else {
+            // No result code yet means still pending
+            status = "pending";
+            console.log(`⏳ Payment still pending...`);
           }
 
           resolve({
