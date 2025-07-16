@@ -12,9 +12,12 @@ import {
   Heart,
   TrendingUp,
   Award,
+  Smartphone,
+  CreditCard,
 } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 import { motion, AnimatePresence } from "framer-motion";
+import MpesaPayment from "@/components/MpesaPayment";
 
 export default function Dashboard() {
   const { state, actions } = useApp();
