@@ -12,61 +12,35 @@ import {
   Heart,
   TrendingUp,
   Award,
-  CreditCard,
 } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 import { motion, AnimatePresence } from "framer-motion";
-import MpesaPayment from "@/components/MpesaPayment";
 
 export default function Dashboard() {
   const { state, actions } = useApp();
-  const [selectedMeal, setSelectedMeal] = useState(null);
-  const [currentOrder, setCurrentOrder] = useState(null);
-  const [likedMeals, setLikedMeals] = useState(new Set());
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedMealForPayment, setSelectedMealForPayment] = useState(null);
+  const [selectedMeal, setSelectedMeal] = useState<number | null>(null);
+  const [currentOrder, setCurrentOrder] = useState<any>(null);
+  const [likedMeals, setLikedMeals] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     actions.loadTodaysMenu();
-    actions.loadOrders();
-  }, [state.user]);
-
-  useEffect(() => {
     if (state.user) {
-      // Only consider orders that are actually confirmed (not pending payment)
+      // Load user's current order
       const userOrder = state.orders.find(
         (order) =>
-          order.customerId === state.user?.id &&
-          order.status !== "delivered" &&
-          order.status !== "cancelled" &&
-          order.status !== "pending_payment", // Don't block for pending payments
+          order.customerId === state.user?.id && order.status !== "delivered",
       );
       setCurrentOrder(userOrder);
-      if (userOrder && userOrder.status === "preparing") {
+      if (userOrder) {
         setSelectedMeal(userOrder.mealId);
-      } else {
-        setCurrentOrder(null);
-        setSelectedMeal(null);
       }
     }
-  }, [state.user, state.orders]);
+  }, [state.user]);
 
-  const handleOrderMeal = (meal) => {
-    setSelectedMealForPayment(meal);
-    setShowPaymentModal(true);
-  };
-
-  const handlePaymentSuccess = async (paymentData) => {
-    setShowPaymentModal(false);
-    await actions.placeOrderWithPayment(selectedMealForPayment.id, paymentData);
-    // Don't set currentOrder here - wait for the order to be confirmed via state updates
-    setSelectedMealForPayment(null);
-  };
-
-  const handleQuickOrder = async (meal) => {
-    // Always use payment modal for orders
-    setSelectedMealForPayment(meal);
-    setShowPaymentModal(true);
+  const handleOrderMeal = async (meal: any) => {
+    await actions.placeOrder(meal.id);
+    setCurrentOrder(meal);
+    setSelectedMeal(meal.id);
   };
 
   const handleChangeOrder = () => {
@@ -74,7 +48,7 @@ export default function Dashboard() {
     setSelectedMeal(null);
   };
 
-  const toggleLike = (mealId) => {
+  const toggleLike = (mealId: number) => {
     const newLiked = new Set(likedMeals);
     if (newLiked.has(mealId)) {
       newLiked.delete(mealId);
@@ -167,25 +141,11 @@ export default function Dashboard() {
                           {currentOrder.status?.charAt(0).toUpperCase() +
                             currentOrder.status?.slice(1)}
                         </p>
-                        {currentOrder.paymentStatus && (
-                          <Badge
-                            className={
-                              currentOrder.paymentStatus === "completed"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-yellow-100 text-yellow-800"
-                            }
-                          >
-                            Payment:{" "}
-                            {currentOrder.paymentStatus === "completed"
-                              ? "Paid"
-                              : "Pending"}
-                          </Badge>
-                        )}
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-3xl font-bold text-green-600 mb-2">
-                        KSH {(currentOrder.price * 100).toFixed(0)}
+                        ${currentOrder.price}
                       </p>
                       <Button
                         variant="outline"
@@ -228,9 +188,7 @@ export default function Dashboard() {
                     selectedMeal === meal.id
                       ? "ring-4 ring-orange-500 border-orange-500 shadow-2xl"
                       : "shadow-xl"
-                  } ${
-                    !meal.available ? "opacity-60" : ""
-                  } bg-white/95 backdrop-blur-xl border-orange-100/50`}
+                  } ${!meal.available ? "opacity-60" : ""} bg-white/95 backdrop-blur-xl border-orange-100/50`}
                 >
                   <CardHeader className="p-0 relative overflow-hidden">
                     <div className="relative">
@@ -313,59 +271,38 @@ export default function Dashboard() {
 
                       <div className="flex items-center justify-between pt-2">
                         <div className="text-3xl font-bold text-orange-600">
-                          KSH {(meal.price * 100).toFixed(0)}
+                          ${meal.price}
                         </div>
                       </div>
 
-                      {/* Payment Options */}
-                      <div className="space-y-2">
-                        <Button
-                          className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
-                          onClick={() => handleOrderMeal(meal)}
-                          disabled={
-                            !meal.available ||
-                            (currentOrder &&
-                              currentOrder.status === "preparing") ||
-                            state.loading
-                          }
-                        >
-                          {!meal.available ? (
-                            "Sold Out"
-                          ) : currentOrder &&
-                            currentOrder.status === "preparing" &&
-                            currentOrder.mealId === meal.id ? (
-                            <>
-                              <CheckCircle className="w-5 h-5 mr-2" />
-                              Order Confirmed
-                            </>
-                          ) : currentOrder &&
-                            currentOrder.status === "preparing" ? (
-                            "Different Order Active"
-                          ) : state.loading ? (
-                            "Processing..."
-                          ) : (
-                            <>
-                              <CreditCard className="w-5 h-5 mr-2" />
-                              Pay with M-Pesa
-                            </>
-                          )}
-                        </Button>
-
-                        <Button
-                          variant="outline"
-                          className="w-full border-orange-300 text-orange-600 hover:bg-orange-50 py-3 rounded-xl transition-all duration-300 disabled:opacity-50"
-                          onClick={() => handleQuickOrder(meal)}
-                          disabled={
-                            !meal.available ||
-                            (currentOrder &&
-                              currentOrder.status === "preparing") ||
-                            state.loading
-                          }
-                        >
-                          <ShoppingCart className="w-5 h-5 mr-2" />
-                          Quick Order
-                        </Button>
-                      </div>
+                      <Button
+                        className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
+                        onClick={() => handleOrderMeal(meal)}
+                        disabled={
+                          !meal.available ||
+                          selectedMeal === meal.id ||
+                          !!currentOrder ||
+                          state.loading
+                        }
+                      >
+                        {selectedMeal === meal.id ? (
+                          <>
+                            <CheckCircle className="w-5 h-5 mr-2" />
+                            Ordered
+                          </>
+                        ) : !meal.available ? (
+                          "Sold Out"
+                        ) : currentOrder ? (
+                          "Order Already Placed"
+                        ) : state.loading ? (
+                          "Processing..."
+                        ) : (
+                          <>
+                            <ShoppingCart className="w-5 h-5 mr-2" />
+                            Order Now
+                          </>
+                        )}
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -422,24 +359,11 @@ export default function Dashboard() {
                               },
                             )}
                           </p>
-                          {order.paymentStatus && (
-                            <Badge
-                              className={
-                                order.paymentStatus === "completed"
-                                  ? "bg-green-100 text-green-800 text-xs"
-                                  : "bg-yellow-100 text-yellow-800 text-xs"
-                              }
-                            >
-                              {order.paymentStatus === "completed"
-                                ? "Paid via M-Pesa"
-                                : "Payment Pending"}
-                            </Badge>
-                          )}
                         </div>
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-bold text-gray-900 mb-1">
-                          KSH {(order.price * 100).toFixed(0)}
+                          ${order.price}
                         </p>
                         <Badge
                           className={
@@ -473,17 +397,6 @@ export default function Dashboard() {
             )}
           </div>
         </motion.div>
-
-        {/* M-Pesa Payment Modal */}
-        <MpesaPayment
-          isOpen={showPaymentModal}
-          onClose={() => {
-            setShowPaymentModal(false);
-            setSelectedMealForPayment(null);
-          }}
-          meal={selectedMealForPayment}
-          onPaymentSuccess={handlePaymentSuccess}
-        />
       </div>
     </div>
   );

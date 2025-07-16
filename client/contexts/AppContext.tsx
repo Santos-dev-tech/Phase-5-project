@@ -1,7 +1,65 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { toast } from "sonner";
 
-const initialState = {
+// Types
+interface Meal {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  rating: number;
+  prepTime: string;
+  category: string;
+  available: boolean;
+  image: string;
+}
+
+interface Order {
+  id: number;
+  customerId: number;
+  customerName: string;
+  mealId: number;
+  meal: string;
+  price: number;
+  status: "preparing" | "ready" | "delivered";
+  orderTime: string;
+}
+
+interface User {
+  id: number;
+  email: string;
+  name: string;
+  role: "customer" | "admin";
+  token: string;
+}
+
+interface AppState {
+  user: User | null;
+  meals: Meal[];
+  todaysMenu: Meal[];
+  orders: Order[];
+  totalRevenue: number;
+  loading: boolean;
+  notifications: string[];
+}
+
+type AppAction =
+  | { type: "SET_USER"; payload: User | null }
+  | { type: "SET_MEALS"; payload: Meal[] }
+  | { type: "SET_TODAYS_MENU"; payload: Meal[] }
+  | { type: "SET_ORDERS"; payload: Order[] }
+  | { type: "ADD_ORDER"; payload: Order }
+  | {
+      type: "UPDATE_ORDER_STATUS";
+      payload: { orderId: number; status: string };
+    }
+  | { type: "ADD_MEAL"; payload: Meal }
+  | { type: "DELETE_MEAL"; payload: number }
+  | { type: "SET_LOADING"; payload: boolean }
+  | { type: "ADD_NOTIFICATION"; payload: string }
+  | { type: "CLEAR_NOTIFICATIONS" };
+
+const initialState: AppState = {
   user: null,
   meals: [],
   todaysMenu: [],
@@ -11,7 +69,7 @@ const initialState = {
   notifications: [],
 };
 
-const appReducer = (state, action) => {
+const appReducer = (state: AppState, action: AppAction): AppState => {
   switch (action.type) {
     case "SET_USER":
       return { ...state, user: action.payload };
@@ -40,7 +98,7 @@ const appReducer = (state, action) => {
     case "UPDATE_ORDER_STATUS":
       const updatedOrders = state.orders.map((order) =>
         order.id === action.payload.orderId
-          ? { ...order, status: action.payload.status }
+          ? { ...order, status: action.payload.status as any }
           : order,
       );
       return { ...state, orders: updatedOrders };
@@ -65,14 +123,31 @@ const appReducer = (state, action) => {
   }
 };
 
-const AppContext = createContext(null);
+const AppContext = createContext<{
+  state: AppState;
+  dispatch: React.Dispatch<AppAction>;
+  actions: {
+    login: (email: string, password: string) => Promise<void>;
+    register: (userData: any) => Promise<void>;
+    logout: () => void;
+    placeOrder: (mealId: number) => Promise<void>;
+    updateOrderStatus: (orderId: number, status: string) => Promise<void>;
+    addMeal: (mealData: any) => Promise<void>;
+    deleteMeal: (mealId: number) => Promise<void>;
+    loadTodaysMenu: () => Promise<void>;
+    loadOrders: () => Promise<void>;
+    loadMeals: () => Promise<void>;
+  };
+} | null>(null);
 
-export const AppProvider = ({ children }) => {
+export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
   // Mock API calls
   const actions = {
-    login: async (email, password) => {
+    login: async (email: string, password: string) => {
       dispatch({ type: "SET_LOADING", payload: true });
       try {
         const response = await fetch("/api/auth/login", {
@@ -95,7 +170,7 @@ export const AppProvider = ({ children }) => {
       }
     },
 
-    register: async (userData) => {
+    register: async (userData: any) => {
       dispatch({ type: "SET_LOADING", payload: true });
       try {
         const response = await fetch("/api/auth/register", {
@@ -124,7 +199,7 @@ export const AppProvider = ({ children }) => {
       toast.success("Logged out successfully");
     },
 
-    placeOrder: async (mealId) => {
+    placeOrder: async (mealId: number) => {
       if (!state.user) return;
       dispatch({ type: "SET_LOADING", payload: true });
       try {
@@ -151,51 +226,7 @@ export const AppProvider = ({ children }) => {
       }
     },
 
-    placeOrderWithPayment: async (mealId, paymentData) => {
-      if (!state.user) return;
-      dispatch({ type: "SET_LOADING", payload: true });
-      try {
-        // Place the order with payment data
-        const orderResponse = await fetch("/api/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            customerId: state.user.id,
-            customerName: state.user.name,
-            mealId,
-            paymentData: {
-              phoneNumber: paymentData.phoneNumber,
-              amount:
-                paymentData.amount ||
-                state.todaysMenu.find((m) => m.id === mealId)?.price,
-              checkoutRequestId: paymentData.checkoutRequestId,
-              mpesaReceiptNumber: paymentData.mpesaReceiptNumber,
-            },
-            paymentStatus: paymentData.mpesaReceiptNumber
-              ? "completed"
-              : "pending",
-          }),
-        });
-
-        const orderData = await orderResponse.json();
-        if (orderData.success) {
-          dispatch({ type: "ADD_ORDER", payload: orderData.data });
-          if (paymentData.mpesaReceiptNumber) {
-            toast.success("Order placed and payment confirmed!");
-          } else {
-            toast.success("Order placed! Payment confirmation pending...");
-          }
-        } else {
-          toast.error(orderData.message || "Order failed");
-        }
-      } catch (error) {
-        toast.error("Order failed");
-      } finally {
-        dispatch({ type: "SET_LOADING", payload: false });
-      }
-    },
-
-    updateOrderStatus: async (orderId, status) => {
+    updateOrderStatus: async (orderId: number, status: string) => {
       try {
         const response = await fetch(`/api/orders/${orderId}/status`, {
           method: "PUT",
@@ -215,7 +246,7 @@ export const AppProvider = ({ children }) => {
       }
     },
 
-    addMeal: async (mealData) => {
+    addMeal: async (mealData: any) => {
       dispatch({ type: "SET_LOADING", payload: true });
       try {
         const response = await fetch("/api/meals", {
@@ -237,7 +268,7 @@ export const AppProvider = ({ children }) => {
       }
     },
 
-    deleteMeal: async (mealId) => {
+    deleteMeal: async (mealId: number) => {
       try {
         dispatch({ type: "DELETE_MEAL", payload: mealId });
         toast.success("Meal deleted successfully!");

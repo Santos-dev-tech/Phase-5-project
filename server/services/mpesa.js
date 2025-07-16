@@ -4,21 +4,19 @@ import { Buffer } from "buffer";
 // Enhanced M-Pesa Integration Service - Realistic Payment Flow
 class MpesaService {
   constructor() {
-    // Check if we have real M-Pesa credentials (sandbox or production)
+    // Check if we have real M-Pesa credentials
     this.hasRealCredentials = !!(
-      this.consumerKey !== "DEMO_CONSUMER_KEY" &&
-      this.consumerSecret !== "DEMO_CONSUMER_SECRET" &&
-      this.consumerKey !== "your_consumer_key_here"
+      process.env.MPESA_CONSUMER_KEY &&
+      process.env.MPESA_CONSUMER_SECRET &&
+      process.env.MPESA_PASSKEY &&
+      process.env.MPESA_CONSUMER_KEY !== "your_consumer_key_here"
     );
 
     // M-Pesa credentials
-    this.consumerKey =
-      process.env.MPESA_CONSUMER_KEY ||
-      "F7id9AW94hl3BxC1aedkJaCy3I6HJmHAaUAfNQYzyOTaKzLJ";
+    this.consumerKey = process.env.MPESA_CONSUMER_KEY || "DEMO_CONSUMER_KEY";
     this.consumerSecret =
-      process.env.MPESA_CONSUMER_SECRET ||
-      "Dy4V6j1I6RpBBxc4qz0CBHfAA1q646ABBibnACMNiYJi4vqukNecNkwy1gVp7sLa";
-    this.environment = process.env.MPESA_ENVIRONMENT || "sandbox";
+      process.env.MPESA_CONSUMER_SECRET || "DEMO_CONSUMER_SECRET";
+    this.environment = process.env.MPESA_ENVIRONMENT || "demo";
 
     // M-Pesa endpoints
     this.baseUrl =
@@ -35,7 +33,7 @@ class MpesaService {
     this.businessPhoneNumber = "254746013145";
     this.callbackUrl =
       process.env.MPESA_CALLBACK_URL ||
-      "https://your-domain.vercel.app/api/payments/mpesa/callback";
+      "http://localhost:8080/api/payments/mpesa/callback";
 
     // Cache for access token
     this.accessToken = null;
@@ -44,16 +42,12 @@ class MpesaService {
     // CRITICAL: Payment tracking for realistic flow
     this.pendingPayments = new Map();
 
-    // Real-time notification callbacks
-    this.paymentCallbacks = new Map();
-
     console.log(`🔧 M-Pesa Service initialized:`);
     console.log(`   Environment: ${this.environment}`);
     console.log(
-      `   Mode: ${this.hasRealCredentials ? "SANDBOX API" : "REALISTIC DEMO"}`,
+      `   Mode: ${this.hasRealCredentials ? "REAL API" : "REALISTIC DEMO"}`,
     );
     console.log(`   Business Account: 0746013145`);
-    console.log(`   Short Code: ${this.shortCode}`);
   }
 
   // Get access token from M-Pesa (with demo fallback)
@@ -75,7 +69,7 @@ class MpesaService {
         return this.accessToken;
       }
 
-      console.log(`🔑 Getting ${this.environment} M-Pesa access token...`);
+      console.log("🔑 Getting real M-Pesa access token...");
 
       const auth = Buffer.from(
         `${this.consumerKey}:${this.consumerSecret}`,
@@ -94,7 +88,7 @@ class MpesaService {
       if (response.access_token) {
         this.accessToken = response.access_token;
         this.tokenExpiry = new Date(Date.now() + 55 * 60 * 1000);
-        console.log(`✅ ${this.environment} M-Pesa access token obtained`);
+        console.log("✅ Real M-Pesa access token obtained");
         return this.accessToken;
       } else {
         throw new Error("No access token in response");
@@ -258,7 +252,7 @@ class MpesaService {
         TransactionDesc: transactionDesc || "Mealy Food Order Payment",
       };
 
-      console.log(`🚀 Sending ${this.environment} STK push to M-Pesa API`);
+      console.log("🚀 Sending real STK push to M-Pesa API");
 
       const response = await this.makeRequest(
         "POST",
@@ -270,7 +264,7 @@ class MpesaService {
         },
       );
 
-      console.log(`✅ ${this.environment} STK push response received`);
+      console.log("✅ Real STK push response received");
 
       if (response.ResponseCode === "0") {
         // Store real payment as pending
@@ -339,8 +333,8 @@ class MpesaService {
 
         const timeSinceInitiation = Date.now() - pendingPayment.timestamp;
 
-        // Payment stays pending for at least 8 seconds (realistic time for user to act)
-        if (timeSinceInitiation < 8000) {
+        // Payment stays pending for at least 10 seconds (realistic time for user to act)
+        if (timeSinceInitiation < 10000) {
           console.log("⏳ Payment still pending - user hasn't acted yet");
           return {
             success: true,
@@ -355,9 +349,9 @@ class MpesaService {
           };
         }
 
-        // After 8 seconds, simulate user action (95% success rate for better UX)
+        // After 10 seconds, simulate user action (90% success rate)
         if (pendingPayment.status === "pending") {
-          const isSuccess = Math.random() > 0.05; // 95% success rate
+          const isSuccess = Math.random() > 0.1; // 90% success rate
 
           if (isSuccess) {
             // Mark as completed
@@ -366,9 +360,6 @@ class MpesaService {
             this.pendingPayments.set(checkoutRequestId, pendingPayment);
 
             console.log("✅ REALISTIC Demo: Payment completed by user!");
-            console.log(
-              `💰 Demo payment of KSH ${pendingPayment.amount} successfully processed`,
-            );
 
             return {
               success: true,
@@ -571,24 +562,6 @@ class MpesaService {
       status: "completed",
       amount: 1000,
     };
-  }
-
-  // Register a callback for payment status updates (for real-time notifications)
-  registerPaymentCallback(checkoutRequestId, callback) {
-    this.paymentCallbacks.set(checkoutRequestId, callback);
-    console.log(`📞 Registered real-time callback for: ${checkoutRequestId}`);
-  }
-
-  // Trigger payment callbacks for real-time notifications
-  triggerPaymentCallback(checkoutRequestId, status, data) {
-    const callback = this.paymentCallbacks.get(checkoutRequestId);
-    if (callback) {
-      console.log(
-        `🔔 Triggering real-time notification for: ${checkoutRequestId}`,
-      );
-      callback(status, data);
-      this.paymentCallbacks.delete(checkoutRequestId);
-    }
   }
 }
 

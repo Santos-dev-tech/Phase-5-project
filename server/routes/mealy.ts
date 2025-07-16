@@ -1,3 +1,5 @@
+import { RequestHandler } from "express";
+
 // Mock data with beautiful food images
 const mealOptions = [
   {
@@ -116,8 +118,6 @@ let orders = [
     price: 15.99,
     status: "preparing",
     orderTime: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // 15 minutes ago
-    paymentRef: null,
-    paymentStatus: "pending",
   },
   {
     id: 2,
@@ -128,8 +128,6 @@ let orders = [
     price: 13.99,
     status: "ready",
     orderTime: new Date(Date.now() - 25 * 60 * 1000).toISOString(), // 25 minutes ago
-    paymentRef: "ws_CO_123456789",
-    paymentStatus: "completed",
   },
   {
     id: 3,
@@ -140,13 +138,11 @@ let orders = [
     price: 18.99,
     status: "delivered",
     orderTime: new Date(Date.now() - 45 * 60 * 1000).toISOString(), // 45 minutes ago
-    paymentRef: "ws_CO_987654321",
-    paymentStatus: "completed",
   },
 ];
 
 // Get today's menu
-export const getTodaysMenu = (req, res) => {
+export const getTodaysMenu: RequestHandler = (req, res) => {
   res.json({
     success: true,
     data: mealOptions.filter((meal) => meal.available),
@@ -155,7 +151,7 @@ export const getTodaysMenu = (req, res) => {
 };
 
 // Get all meal options (admin)
-export const getMealOptions = (req, res) => {
+export const getMealOptions: RequestHandler = (req, res) => {
   res.json({
     success: true,
     data: mealOptions,
@@ -163,7 +159,7 @@ export const getMealOptions = (req, res) => {
 };
 
 // Add new meal option (admin)
-export const addMealOption = (req, res) => {
+export const addMealOption: RequestHandler = (req, res) => {
   const { name, description, price, prepTime, category, image } = req.body;
 
   const newMeal = {
@@ -190,7 +186,7 @@ export const addMealOption = (req, res) => {
 };
 
 // Delete meal option (admin)
-export const deleteMealOption = (req, res) => {
+export const deleteMealOption: RequestHandler = (req, res) => {
   const { mealId } = req.params;
   const index = mealOptions.findIndex((meal) => meal.id === parseInt(mealId));
 
@@ -210,37 +206,14 @@ export const deleteMealOption = (req, res) => {
 };
 
 // Place order
-export const placeOrder = (req, res) => {
-  const {
-    customerId,
-    customerName,
-    mealId,
-    paymentRef,
-    paymentData,
-    paymentStatus,
-  } = req.body;
+export const placeOrder: RequestHandler = (req, res) => {
+  const { customerId, customerName, mealId } = req.body;
 
   const meal = mealOptions.find((m) => m.id === mealId);
   if (!meal || !meal.available) {
     return res.status(400).json({
       success: false,
       message: "Meal not available",
-    });
-  }
-
-  // Check if customer already has an active order
-  const existingOrder = orders.find(
-    (order) =>
-      order.customerId === customerId &&
-      order.status !== "delivered" &&
-      order.status !== "cancelled",
-  );
-
-  if (existingOrder) {
-    return res.status(400).json({
-      success: false,
-      message:
-        "You already have an active order. Please wait for it to be completed.",
     });
   }
 
@@ -251,12 +224,8 @@ export const placeOrder = (req, res) => {
     mealId,
     meal: meal.name,
     price: meal.price,
-    status: paymentStatus === "completed" ? "preparing" : "pending_payment",
+    status: "preparing" as const,
     orderTime: new Date().toISOString(),
-    paymentRef: paymentRef || paymentData?.checkoutRequestId || null,
-    paymentStatus:
-      paymentStatus || (paymentRef ? "pending" : "cash_on_delivery"),
-    paymentData: paymentData || null,
   };
 
   orders.push(newOrder);
@@ -269,12 +238,12 @@ export const placeOrder = (req, res) => {
 };
 
 // Get orders (admin)
-export const getOrders = (req, res) => {
+export const getOrders: RequestHandler = (req, res) => {
   const { date } = req.query;
   let filteredOrders = orders;
 
   if (date) {
-    const targetDate = new Date(date).toISOString().split("T")[0];
+    const targetDate = new Date(date as string).toISOString().split("T")[0];
     filteredOrders = orders.filter((order) =>
       order.orderTime.startsWith(targetDate),
     );
@@ -287,7 +256,7 @@ export const getOrders = (req, res) => {
 };
 
 // Update order status (admin)
-export const updateOrderStatus = (req, res) => {
+export const updateOrderStatus: RequestHandler = (req, res) => {
   const { orderId } = req.params;
   const { status } = req.body;
 
@@ -311,7 +280,7 @@ export const updateOrderStatus = (req, res) => {
 };
 
 // Get customer's order history
-export const getCustomerOrders = (req, res) => {
+export const getCustomerOrders: RequestHandler = (req, res) => {
   const { customerId } = req.params;
 
   const customerOrders = orders.filter(
@@ -325,7 +294,7 @@ export const getCustomerOrders = (req, res) => {
 };
 
 // Authentication endpoints (mock)
-export const login = (req, res) => {
+export const login: RequestHandler = (req, res) => {
   const { email, password } = req.body;
 
   // Mock authentication
@@ -359,7 +328,7 @@ export const login = (req, res) => {
   }
 };
 
-export const register = (req, res) => {
+export const register: RequestHandler = (req, res) => {
   const { firstName, lastName, email, password, role } = req.body;
 
   // Mock registration
