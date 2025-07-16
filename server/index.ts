@@ -13,6 +13,14 @@ import {
   login,
   register,
 } from "./routes/mealy";
+import {
+  initiateMpesaPayment,
+  checkPaymentStatus,
+  handleMpesaCallback,
+  getPaymentTransactions,
+  testMpesaConfig,
+  verifyPayment,
+} from "./routes/payments";
 
 export function createServer() {
   const app = express();
