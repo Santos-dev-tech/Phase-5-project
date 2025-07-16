@@ -50,9 +50,10 @@ class MpesaService {
     console.log(`🔧 M-Pesa Service initialized:`);
     console.log(`   Environment: ${this.environment}`);
     console.log(
-      `   Mode: ${this.hasRealCredentials ? "REAL API" : "REALISTIC DEMO"}`,
+      `   Mode: ${this.hasRealCredentials ? "SANDBOX API" : "REALISTIC DEMO"}`,
     );
     console.log(`   Business Account: 0746013145`);
+    console.log(`   Short Code: ${this.shortCode}`);
   }
 
   // Get access token from M-Pesa (with demo fallback)
