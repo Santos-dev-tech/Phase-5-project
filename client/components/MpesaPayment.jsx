@@ -350,17 +350,17 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
                 <Button
                   onClick={initiatePayment}
                   disabled={!phoneNumber || isProcessing}
-                  className="flex-1 bg-green-600 hover:bg-green-700"
+                  className="flex-1 bg-red-600 hover:bg-red-700"
                 >
                   {isProcessing ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Sending...
+                      Processing...
                     </>
                   ) : (
                     <>
                       <Smartphone className="w-4 h-4 mr-2" />
-                      Pay Now
+                      CHARGE MY M-PESA
                     </>
                   )}
                 </Button>
