@@ -329,15 +329,18 @@ export default function Dashboard() {
                             state.loading
                           }
                         >
-                          {selectedMeal === meal.id ? (
+                          {!meal.available ? (
+                            "Sold Out"
+                          ) : currentOrder &&
+                            currentOrder.status === "preparing" &&
+                            currentOrder.mealId === meal.id ? (
                             <>
                               <CheckCircle className="w-5 h-5 mr-2" />
-                              Ordered
+                              Order Confirmed
                             </>
-                          ) : !meal.available ? (
-                            "Sold Out"
-                          ) : currentOrder ? (
-                            "Order Already Placed"
+                          ) : currentOrder &&
+                            currentOrder.status === "preparing" ? (
+                            "Different Order Active"
                           ) : state.loading ? (
                             "Processing..."
                           ) : (
