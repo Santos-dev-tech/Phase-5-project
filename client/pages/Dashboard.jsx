@@ -409,6 +409,17 @@ export default function Dashboard() {
             )}
           </div>
         </motion.div>
+
+        {/* M-Pesa Payment Modal */}
+        <MpesaPayment
+          isOpen={paymentModalOpen}
+          onClose={() => {
+            setPaymentModalOpen(false);
+            setSelectedMealForPayment(null);
+          }}
+          meal={selectedMealForPayment}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
       </div>
     </div>
   );
