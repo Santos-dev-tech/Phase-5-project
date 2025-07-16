@@ -373,13 +373,16 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
                   <div className="flex items-center space-x-2 mb-2">
                     <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
                     <span className="text-yellow-800 font-semibold text-sm">
-                      Waiting for your action...
+                      Waiting for your payment...
                     </span>
                   </div>
                   <div className="text-xs text-yellow-700 space-y-1">
-                    <div>⏳ You have 3 minutes to complete payment</div>
+                    <div>⏳ Please complete payment within 3 minutes</div>
                     <div>📱 Check your phone for M-Pesa notification</div>
                     <div>🔢 Enter your M-Pesa PIN when prompted</div>
+                    <div>
+                      ✅ Payment will automatically confirm when completed
+                    </div>
                   </div>
                 </div>
                 <div className="text-xs text-green-600 space-y-1">
