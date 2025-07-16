@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Payment Test</title>
+  </head>
+  <body>
+    <h1>Payment Flow Test</h1>
+    <button onclick="testPayment()">Test Payment with 0712345678</button>
+    <div id="results"></div>
+
+    <script>
+      async function testPayment() {
+        const results = document.getElementById("results");
+        results.innerHTML = "<p>🧪 Testing payment flow...</p>";
+
+        try {
+          // Step 1: Initiate payment
+          console.log("🚀 Step 1: Initiating payment...");
+          const paymentResponse = await fetch("/api/payments/mpesa/initiate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              customerId: 1,
+              customerName: "Test User",
+              mealId: 1,
+              phoneNumber: "0712345678",
+              amount: 15.99,
+            }),
+          });
+
+          const paymentData = await paymentResponse.json();
+          console.log("💳 Payment initiation result:", paymentData);
+
+          if (paymentData.success) {
+            const checkoutId = paymentData.data.checkoutRequestId;
+            results.innerHTML += `<p>✅ Payment initiated: ${checkoutId}</p>`;
+
+            // Step 2: Check immediate status (should be pending)
+            setTimeout(async () => {
+              console.log("🔍 Step 2: Checking immediate status...");
+              const statusResponse = await fetch(
+                `/api/payments/mpesa/status/${checkoutId}`,
+              );
+              const statusData = await statusResponse.json();
+              console.log("📊 Immediate status:", statusData);
+              results.innerHTML += `<p>📊 Immediate status: ${statusData.data.status} - ${statusData.data.resultDesc}</p>`;
+
+              // Step 3: Check status after 5 seconds
+              setTimeout(async () => {
+                console.log("🔍 Step 3: Checking status after 5s...");
+                const statusResponse2 = await fetch(
+                  `/api/payments/mpesa/status/${checkoutId}`,
+                );
+                const statusData2 = await statusResponse2.json();
+                console.log("📊 Status after 5s:", statusData2);
+                results.innerHTML += `<p>📊 After 5s: ${statusData2.data.status} - ${statusData2.data.resultDesc}</p>`;
+
+                // Step 4: Check final status after 15 seconds
+                setTimeout(async () => {
+                  console.log("🔍 Step 4: Checking final status after 15s...");
+                  const statusResponse3 = await fetch(
+                    `/api/payments/mpesa/status/${checkoutId}`,
+                  );
+                  const statusData3 = await statusResponse3.json();
+                  console.log("📊 Final status after 15s:", statusData3);
+                  results.innerHTML += `<p>📊 Final (15s): ${statusData3.data.status} - ${statusData3.data.resultDesc}</p>`;
+
+                  if (statusData3.data.status === "completed") {
+                    results.innerHTML += `<p style="color: green;">🎉 SUCCESS: Payment completed!</p>`;
+                  } else if (statusData3.data.status === "pending") {
+                    results.innerHTML += `<p style="color: orange;">⏳ PENDING: Still waiting for user action</p>`;
+                  } else {
+                    results.innerHTML += `<p style="color: red;">❌ FAILED: ${statusData3.data.resultDesc}</p>`;
+                  }
+                }, 15000);
+              }, 5000);
+            }, 1000);
+          } else {
+            results.innerHTML += `<p style="color: red;">❌ Payment initiation failed: ${paymentData.message}</p>`;
+          }
+        } catch (error) {
+          console.error("❌ Test error:", error);
+          results.innerHTML += `<p style="color: red;">❌ Test error: ${error.message}</p>`;
+        }
+      }
+    </script>
+  </body>
+</html>
