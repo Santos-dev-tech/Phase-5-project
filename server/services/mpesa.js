@@ -9,7 +9,8 @@ class MpesaService {
       process.env.MPESA_CONSUMER_KEY &&
       process.env.MPESA_CONSUMER_SECRET &&
       process.env.MPESA_PASSKEY &&
-      process.env.MPESA_CONSUMER_KEY !== "your_consumer_key_here"
+      process.env.MPESA_CONSUMER_KEY !== "your_consumer_key_here" &&
+      process.env.MPESA_CONSUMER_KEY !== "DEMO_CONSUMER_KEY"
     );
 
     // M-Pesa credentials
