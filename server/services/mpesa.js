@@ -258,7 +258,7 @@ class MpesaService {
         TransactionDesc: transactionDesc || "Mealy Food Order Payment",
       };
 
-      console.log("🚀 Sending real STK push to M-Pesa API");
+      console.log(`🚀 Sending ${this.environment} STK push to M-Pesa API`);
 
       const response = await this.makeRequest(
         "POST",
@@ -270,7 +270,7 @@ class MpesaService {
         },
       );
 
-      console.log("✅ Real STK push response received");
+      console.log(`✅ ${this.environment} STK push response received`);
 
       if (response.ResponseCode === "0") {
         // Store real payment as pending
