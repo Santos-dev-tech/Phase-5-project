@@ -21,8 +21,11 @@ import {
   Shield,
 } from "lucide-react";
 import { toast } from "sonner";
+import { addTransaction } from "@/lib/firebase";
+import { useApp } from "@/contexts/AppContext";
 
 const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
+  const { state } = useApp();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState("idle"); // idle, processing, success, failed
@@ -75,8 +78,8 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customerId: 1, // This should come from user context
-          customerName: "Customer", // This should come from user context
+          customerId: state.user?.id || 1,
+          customerName: state.user?.name || "Customer",
           mealId: meal.id,
           phoneNumber: phoneNumber.replace(/\D/g, ""),
           amount: Math.round(meal.price * 100), // Convert USD to KSH
@@ -140,11 +143,36 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
             toast.success(
               "🎉 Payment completed! Money deposited to 0746013145",
             );
+
+            // Save transaction to Firebase
+            if (state.user) {
+              try {
+                await addTransaction({
+                  userId: state.user.id,
+                  type: "mpesa_payment",
+                  mealId: meal.id,
+                  mealName: meal.name,
+                  amount: data.data.amount || Math.round(meal.price * 100),
+                  phoneNumber: phoneNumber.replace(/\D/g, ""),
+                  mpesaReceiptNumber: data.data.mpesaReceiptNumber,
+                  checkoutRequestId: requestId,
+                  status: "completed",
+                  resultDesc: data.data.resultDesc,
+                });
+                console.log("✅ Transaction saved to Firebase");
+              } catch (error) {
+                console.error(
+                  "❌ Failed to save transaction to Firebase:",
+                  error,
+                );
+              }
+            }
+
             onPaymentSuccess({
               checkoutRequestId: requestId,
               mpesaReceiptNumber: data.data.mpesaReceiptNumber,
               amount: data.data.amount,
-              phoneNumber: phoneNumber.replace(/\\D/g, ""),
+              phoneNumber: phoneNumber.replace(/\D/g, ""),
             });
             return;
           } else if (status === "pending") {
