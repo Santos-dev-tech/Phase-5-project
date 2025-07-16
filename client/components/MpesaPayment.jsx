@@ -147,6 +147,13 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
               phoneNumber: phoneNumber.replace(/\\D/g, ""),
             });
             return;
+          } else if (status === "pending") {
+            // Keep showing processing state - user hasn't acted yet
+            console.log("⏳ Payment still pending - waiting for user action");
+            setPaymentMessage(
+              "Waiting for you to complete payment on your phone...",
+            );
+            // Don't change payment status, keep it as "processing"
           } else if (status === "failed") {
             setPaymentStatus("failed");
             setPaymentMessage(resultDesc || "Payment failed");
