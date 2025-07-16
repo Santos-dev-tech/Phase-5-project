@@ -43,6 +43,9 @@ class MpesaService {
     // CRITICAL: Payment tracking for realistic flow
     this.pendingPayments = new Map();
 
+    // Real-time notification callbacks
+    this.paymentCallbacks = new Map();
+
     console.log(`🔧 M-Pesa Service initialized:`);
     console.log(`   Environment: ${this.environment}`);
     console.log(
