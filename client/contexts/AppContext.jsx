@@ -273,13 +273,26 @@ export const AppProvider = ({ children }) => {
 
     loadOrders: async () => {
       try {
+        console.log("🔄 Loading orders...");
         const response = await fetch("/api/orders");
+        console.log("📡 Orders response status:", response.status);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
         const data = await response.json();
+        console.log("📋 Orders data received:", data);
+
         if (data.success) {
           dispatch({ type: "SET_ORDERS", payload: data.data });
+          console.log("✅ Orders loaded successfully");
+        } else {
+          console.error("❌ Orders API returned success: false", data);
         }
       } catch (error) {
-        console.error("Failed to load orders");
+        console.error("❌ Failed to load orders:", error.message);
+        console.error("🔍 Full error:", error);
       }
     },
 
