@@ -109,16 +109,30 @@ export default function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-orange-100/50">
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+          <div className="bg-gradient-to-br from-white via-orange-50 to-green-50 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-orange-100/50">
+            <motion.h1
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-orange-600 to-green-600 bg-clip-text text-transparent mb-4"
+            >
               Welcome, {state.user.name}!
-            </h1>
-            <div className="flex items-center justify-center space-x-3 text-orange-600 mb-4">
-              <Calendar className="w-6 h-6" />
-              <span className="text-xl font-semibold">{getCurrentDate()}</span>
+            </motion.h1>
+            <div className="flex items-center justify-center space-x-6 mb-4">
+              <div className="flex items-center space-x-2 text-orange-600">
+                <Calendar className="w-6 h-6" />
+                <span className="text-xl font-semibold">
+                  {getCurrentDate()}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2 text-green-600">
+                <Smartphone className="w-6 h-6" />
+                <span className="text-lg font-medium">M-Pesa Ready</span>
+              </div>
             </div>
-            <p className="text-gray-600 text-lg">
-              Discover today's carefully crafted culinary delights
+            <p className="text-gray-700 text-lg">
+              Discover today's carefully crafted culinary delights - Pay
+              instantly with M-Pesa!
             </p>
           </div>
         </motion.div>
