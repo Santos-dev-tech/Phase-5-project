@@ -35,7 +35,7 @@ class MpesaService {
     this.businessPhoneNumber = "254746013145";
     this.callbackUrl =
       process.env.MPESA_CALLBACK_URL ||
-      "http://localhost:8080/api/payments/mpesa/callback";
+      "https://702459ea414444aab3325864e4f5a486-afb6bdbf03154fb986d913ce5.fly.dev/api/payments/mpesa/callback";
 
     // Cache for access token
     this.accessToken = null;
