@@ -33,15 +33,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (state.user) {
-      // Load user's current active order only
+      // Only consider orders that are actually confirmed (not pending payment)
       const userOrder = state.orders.find(
         (order) =>
           order.customerId === state.user?.id &&
           order.status !== "delivered" &&
-          order.status !== "cancelled",
+          order.status !== "cancelled" &&
+          order.status !== "pending_payment", // Don't block for pending payments
       );
       setCurrentOrder(userOrder);
-      if (userOrder) {
+      if (userOrder && userOrder.status === "preparing") {
         setSelectedMeal(userOrder.mealId);
       } else {
         setCurrentOrder(null);
