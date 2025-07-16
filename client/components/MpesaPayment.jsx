@@ -144,7 +144,7 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
               "🎉 Payment completed! Money deposited to 0746013145",
             );
 
-            // Save transaction to Firebase
+            // Try to save transaction to Firebase
             if (state.user) {
               try {
                 await addTransaction({
@@ -161,10 +161,11 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
                 });
                 console.log("✅ Transaction saved to Firebase");
               } catch (error) {
-                console.error(
-                  "❌ Failed to save transaction to Firebase:",
-                  error,
+                console.warn(
+                  "⚠️ Failed to save transaction to Firebase (user may not be authenticated with Google):",
+                  error.message,
                 );
+                // Don't show error to user as payment was still successful
               }
             }
 
