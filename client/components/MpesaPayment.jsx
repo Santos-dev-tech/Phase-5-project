@@ -252,19 +252,26 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Live Payment Notice */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          {/* LIVE MONEY WARNING */}
+          <div className="bg-red-50 border border-red-300 rounded-lg p-4">
             <div className="flex items-center space-x-2 mb-2">
-              <Zap className="w-5 h-5 text-green-600" />
-              <span className="font-semibold text-green-900">
-                Real M-Pesa Payment
+              <span className="text-2xl">⚠️</span>
+              <span className="font-bold text-red-900 text-lg">
+                LIVE M-PESA PAYMENT
               </span>
             </div>
-            <p className="text-green-700 text-sm">
-              This will send an actual payment request to your phone. Funds will
-              be deposited to{" "}
-              <strong className="text-green-900">0746013145</strong>
-            </p>
+            <div className="text-red-800 text-sm space-y-1">
+              <p className="font-semibold">🚨 THIS CHARGES REAL MONEY 🚨</p>
+              <p>
+                • Your M-Pesa account will be debited KSH{" "}
+                {(meal.price * 100).toFixed(0)}
+              </p>
+              <p>
+                • Funds go to: <strong>0746013145</strong>
+              </p>
+              <p>• This is NOT a demo or test payment</p>
+              <p>• Transaction cannot be reversed</p>
+            </div>
           </div>
 
           {/* Order Summary */}
