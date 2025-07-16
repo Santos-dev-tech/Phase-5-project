@@ -248,13 +248,26 @@ export const AppProvider = ({ children }) => {
 
     loadTodaysMenu: async () => {
       try {
+        console.log("🔄 Loading today's menu...");
         const response = await fetch("/api/menu/today");
+        console.log("📡 Response status:", response.status);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
         const data = await response.json();
+        console.log("📋 Menu data received:", data);
+
         if (data.success) {
           dispatch({ type: "SET_TODAYS_MENU", payload: data.data });
+          console.log("✅ Today's menu loaded successfully");
+        } else {
+          console.error("❌ Menu API returned success: false", data);
         }
       } catch (error) {
-        console.error("Failed to load today's menu");
+        console.error("❌ Failed to load today's menu:", error.message);
+        console.error("🔍 Full error:", error);
       }
     },
 
