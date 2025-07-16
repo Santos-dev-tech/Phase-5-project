@@ -324,8 +324,8 @@ export default function Dashboard() {
                           onClick={() => handleOrderMeal(meal)}
                           disabled={
                             !meal.available ||
-                            selectedMeal === meal.id ||
-                            !!currentOrder ||
+                            (currentOrder &&
+                              currentOrder.status === "preparing") ||
                             state.loading
                           }
                         >
@@ -354,8 +354,8 @@ export default function Dashboard() {
                           onClick={() => handleQuickOrder(meal)}
                           disabled={
                             !meal.available ||
-                            selectedMeal === meal.id ||
-                            !!currentOrder ||
+                            (currentOrder &&
+                              currentOrder.status === "preparing") ||
                             state.loading
                           }
                         >
