@@ -300,8 +300,17 @@ export default function Dashboard() {
                       </div>
 
                       <div className="flex items-center justify-between pt-2">
-                        <div className="text-3xl font-bold text-orange-600">
-                          ${meal.price}
+                        <div className="flex flex-col">
+                          <div className="text-3xl font-bold text-orange-600">
+                            KSH {(meal.price * 130).toFixed(0)}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            (${meal.price})
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-1 text-green-600">
+                          <CreditCard className="w-4 h-4" />
+                          <span className="text-sm font-medium">M-Pesa</span>
                         </div>
                       </div>
 
