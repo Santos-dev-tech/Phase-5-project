@@ -46,13 +46,26 @@ export const logout = () => signOut(auth);
 // Firestore functions
 export const addTransaction = async (transactionData) => {
   try {
+    console.log("🔐 Current auth user:", auth.currentUser);
+    console.log("📄 Transaction data:", transactionData);
+
+    if (!auth.currentUser) {
+      throw new Error("User not authenticated");
+    }
+
     const docRef = await addDoc(collection(db, "transactions"), {
       ...transactionData,
       createdAt: new Date(),
     });
+    console.log("✅ Transaction added with ID:", docRef.id);
     return docRef.id;
   } catch (error) {
-    console.error("Error adding transaction: ", error);
+    console.error("❌ Error adding transaction:", error);
+    console.error("🔍 Error details:", {
+      code: error.code,
+      message: error.message,
+      customData: error.customData,
+    });
     throw error;
   }
 };
@@ -74,13 +87,26 @@ export const getUserTransactions = async (userId) => {
 
 export const addOrder = async (orderData) => {
   try {
+    console.log("🔐 Current auth user:", auth.currentUser);
+    console.log("📄 Order data:", orderData);
+
+    if (!auth.currentUser) {
+      throw new Error("User not authenticated");
+    }
+
     const docRef = await addDoc(collection(db, "orders"), {
       ...orderData,
       createdAt: new Date(),
     });
+    console.log("✅ Order added with ID:", docRef.id);
     return docRef.id;
   } catch (error) {
-    console.error("Error adding order: ", error);
+    console.error("❌ Error adding order:", error);
+    console.error("🔍 Error details:", {
+      code: error.code,
+      message: error.message,
+      customData: error.customData,
+    });
     throw error;
   }
 };
