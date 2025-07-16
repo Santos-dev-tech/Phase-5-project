@@ -155,44 +155,38 @@ export const AppProvider = ({ children }) => {
       if (!state.user) return;
       dispatch({ type: "SET_LOADING", payload: true });
       try {
-        // First initiate M-Pesa payment
-        const paymentResponse = await fetch("/api/payments/mpesa/initiate", {
+        // Place the order with payment data
+        const orderResponse = await fetch("/api/orders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             customerId: state.user.id,
             customerName: state.user.name,
             mealId,
-            phoneNumber: paymentData.phoneNumber,
-            amount: paymentData.amount,
+            paymentData: {
+              phoneNumber: paymentData.phoneNumber,
+              amount:
+                paymentData.amount ||
+                state.todaysMenu.find((m) => m.id === mealId)?.price,
+              checkoutRequestId: paymentData.checkoutRequestId,
+              mpesaReceiptNumber: paymentData.mpesaReceiptNumber,
+            },
+            paymentStatus: paymentData.mpesaReceiptNumber
+              ? "completed"
+              : "pending",
           }),
         });
 
-        const paymentResult = await paymentResponse.json();
-        if (paymentResult.success) {
-          toast.success(
-            "Payment initiated! Please check your phone for M-Pesa prompt.",
-          );
-
-          // Place the order
-          const orderResponse = await fetch("/api/orders", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              customerId: state.user.id,
-              customerName: state.user.name,
-              mealId,
-              paymentRef: paymentResult.data.checkoutRequestId,
-            }),
-          });
-
-          const orderData = await orderResponse.json();
-          if (orderData.success) {
-            dispatch({ type: "ADD_ORDER", payload: orderData.data });
-            toast.success("Order placed successfully! Payment processing...");
+        const orderData = await orderResponse.json();
+        if (orderData.success) {
+          dispatch({ type: "ADD_ORDER", payload: orderData.data });
+          if (paymentData.mpesaReceiptNumber) {
+            toast.success("Order placed and payment confirmed!");
+          } else {
+            toast.success("Order placed! Payment confirmation pending...");
           }
         } else {
-          toast.error(paymentResult.message || "Payment failed");
+          toast.error(orderData.message || "Order failed");
         }
       } catch (error) {
         toast.error("Order failed");
