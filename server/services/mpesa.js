@@ -14,10 +14,13 @@ class MpesaService {
     );
 
     // M-Pesa credentials
-    this.consumerKey = process.env.MPESA_CONSUMER_KEY || "DEMO_CONSUMER_KEY";
+    this.consumerKey =
+      process.env.MPESA_CONSUMER_KEY ||
+      "F7id9AW94hl3BxC1aedkJaCy3I6HJmHAaUAfNQYzyOTaKzLJ";
     this.consumerSecret =
-      process.env.MPESA_CONSUMER_SECRET || "DEMO_CONSUMER_SECRET";
-    this.environment = process.env.MPESA_ENVIRONMENT || "demo";
+      process.env.MPESA_CONSUMER_SECRET ||
+      "Dy4V6j1I6RpBBxc4qz0CBHfAA1q646ABBibnACMNiYJi4vqukNecNkwy1gVp7sLa";
+    this.environment = process.env.MPESA_ENVIRONMENT || "sandbox";
 
     // M-Pesa endpoints
     this.baseUrl =
