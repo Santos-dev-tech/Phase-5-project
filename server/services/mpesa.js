@@ -4,13 +4,11 @@ import { Buffer } from "buffer";
 // Enhanced M-Pesa Integration Service - Realistic Payment Flow
 class MpesaService {
   constructor() {
-    // Check if we have real M-Pesa credentials
+    // Check if we have real M-Pesa credentials (sandbox or production)
     this.hasRealCredentials = !!(
-      process.env.MPESA_CONSUMER_KEY &&
-      process.env.MPESA_CONSUMER_SECRET &&
-      process.env.MPESA_PASSKEY &&
-      process.env.MPESA_CONSUMER_KEY !== "your_consumer_key_here" &&
-      process.env.MPESA_CONSUMER_KEY !== "DEMO_CONSUMER_KEY"
+      this.consumerKey !== "DEMO_CONSUMER_KEY" &&
+      this.consumerSecret !== "DEMO_CONSUMER_SECRET" &&
+      this.consumerKey !== "your_consumer_key_here"
     );
 
     // M-Pesa credentials
