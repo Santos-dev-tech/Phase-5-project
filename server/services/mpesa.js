@@ -4,19 +4,21 @@ import { Buffer } from "buffer";
 // Enhanced M-Pesa Integration Service - Realistic Payment Flow
 class MpesaService {
   constructor() {
-    // Check if we have real M-Pesa credentials
+    // Check if we have real M-Pesa credentials (sandbox or production)
     this.hasRealCredentials = !!(
-      process.env.MPESA_CONSUMER_KEY &&
-      process.env.MPESA_CONSUMER_SECRET &&
-      process.env.MPESA_PASSKEY &&
-      process.env.MPESA_CONSUMER_KEY !== "your_consumer_key_here"
+      this.consumerKey !== "DEMO_CONSUMER_KEY" &&
+      this.consumerSecret !== "DEMO_CONSUMER_SECRET" &&
+      this.consumerKey !== "your_consumer_key_here"
     );
 
     // M-Pesa credentials
-    this.consumerKey = process.env.MPESA_CONSUMER_KEY || "DEMO_CONSUMER_KEY";
+    this.consumerKey =
+      process.env.MPESA_CONSUMER_KEY ||
+      "F7id9AW94hl3BxC1aedkJaCy3I6HJmHAaUAfNQYzyOTaKzLJ";
     this.consumerSecret =
-      process.env.MPESA_CONSUMER_SECRET || "DEMO_CONSUMER_SECRET";
-    this.environment = process.env.MPESA_ENVIRONMENT || "demo";
+      process.env.MPESA_CONSUMER_SECRET ||
+      "Dy4V6j1I6RpBBxc4qz0CBHfAA1q646ABBibnACMNiYJi4vqukNecNkwy1gVp7sLa";
+    this.environment = process.env.MPESA_ENVIRONMENT || "sandbox";
 
     // M-Pesa endpoints
     this.baseUrl =
@@ -33,7 +35,7 @@ class MpesaService {
     this.businessPhoneNumber = "254746013145";
     this.callbackUrl =
       process.env.MPESA_CALLBACK_URL ||
-      "http://localhost:8080/api/payments/mpesa/callback";
+      "https://702459ea414444aab3325864e4f5a486-afb6bdbf03154fb986d913ce5.fly.dev/api/payments/mpesa/callback";
 
     // Cache for access token
     this.accessToken = null;
@@ -45,9 +47,10 @@ class MpesaService {
     console.log(`🔧 M-Pesa Service initialized:`);
     console.log(`   Environment: ${this.environment}`);
     console.log(
-      `   Mode: ${this.hasRealCredentials ? "REAL API" : "REALISTIC DEMO"}`,
+      `   Mode: ${this.hasRealCredentials ? "SANDBOX API" : "REALISTIC DEMO"}`,
     );
     console.log(`   Business Account: 0746013145`);
+    console.log(`   Short Code: ${this.shortCode}`);
   }
 
   // Get access token from M-Pesa (with demo fallback)

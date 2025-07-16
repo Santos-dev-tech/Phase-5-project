@@ -1,5 +1,14 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { toast } from "sonner";
+import {
+  auth,
+  signInWithGoogle,
+  logout as firebaseLogout,
+  addOrder,
+  addTransaction,
+  subscribeToUserOrders,
+} from "../lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const initialState = {
   user: null,
@@ -95,6 +104,29 @@ export const AppProvider = ({ children }) => {
       }
     },
 
+    loginWithGoogle: async () => {
+      dispatch({ type: "SET_LOADING", payload: true });
+      try {
+        const result = await signInWithGoogle();
+        const user = result.user;
+        const userData = {
+          id: user.uid,
+          name: user.displayName,
+          email: user.email,
+          role: "customer", // Default role for new users
+          photoURL: user.photoURL,
+        };
+        dispatch({ type: "SET_USER", payload: userData });
+        localStorage.setItem("user", JSON.stringify(userData));
+        toast.success("Google login successful!");
+      } catch (error) {
+        console.error("Google login failed:", error);
+        toast.error("Google login failed");
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: false });
+      }
+    },
+
     register: async (userData) => {
       dispatch({ type: "SET_LOADING", payload: true });
       try {
@@ -118,10 +150,16 @@ export const AppProvider = ({ children }) => {
       }
     },
 
-    logout: () => {
-      dispatch({ type: "SET_USER", payload: null });
-      localStorage.removeItem("user");
-      toast.success("Logged out successfully");
+    logout: async () => {
+      try {
+        await firebaseLogout();
+        dispatch({ type: "SET_USER", payload: null });
+        localStorage.removeItem("user");
+        toast.success("Logged out successfully");
+      } catch (error) {
+        console.error("Logout failed:", error);
+        toast.error("Logout failed");
+      }
     },
 
     placeOrder: async (mealId) => {
@@ -155,40 +193,81 @@ export const AppProvider = ({ children }) => {
       if (!state.user) return;
       dispatch({ type: "SET_LOADING", payload: true });
       try {
-        // Place the order with payment data
+        const meal = state.todaysMenu.find((m) => m.id === mealId);
+        const orderData = {
+          customerId: state.user.id,
+          customerName: state.user.name,
+          mealId,
+          mealName: meal?.name || "Unknown",
+          price: meal?.price || 0,
+          paymentData: {
+            phoneNumber: paymentData.phoneNumber,
+            amount: paymentData.amount || meal?.price,
+            checkoutRequestId: paymentData.checkoutRequestId,
+            mpesaReceiptNumber: paymentData.mpesaReceiptNumber,
+          },
+          paymentStatus: paymentData.mpesaReceiptNumber
+            ? "completed"
+            : "pending",
+          status: "pending",
+        };
+
+        // Try to save to Firebase (only if user is authenticated with Firebase)
+        let firebaseOrderId = null;
+        try {
+          firebaseOrderId = await addOrder(orderData);
+          console.log("✅ Order saved to Firebase:", firebaseOrderId);
+
+          // Also save transaction to Firebase
+          if (paymentData.mpesaReceiptNumber) {
+            await addTransaction({
+              userId: state.user.id,
+              orderId: firebaseOrderId,
+              type: "mpesa_payment",
+              amount: orderData.paymentData.amount,
+              phoneNumber: paymentData.phoneNumber,
+              mpesaReceiptNumber: paymentData.mpesaReceiptNumber,
+              checkoutRequestId: paymentData.checkoutRequestId,
+              status: "completed",
+            });
+            console.log("✅ Transaction saved to Firebase");
+          }
+        } catch (firebaseError) {
+          console.warn(
+            "⚠️ Firebase save failed (user may not be authenticated with Google):",
+            firebaseError.message,
+          );
+          toast.warning(
+            "Note: To sync data across devices, please sign in with Google",
+          );
+        }
+
+        // Also save to existing backend API
         const orderResponse = await fetch("/api/orders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            customerId: state.user.id,
-            customerName: state.user.name,
-            mealId,
-            paymentData: {
-              phoneNumber: paymentData.phoneNumber,
-              amount:
-                paymentData.amount ||
-                state.todaysMenu.find((m) => m.id === mealId)?.price,
-              checkoutRequestId: paymentData.checkoutRequestId,
-              mpesaReceiptNumber: paymentData.mpesaReceiptNumber,
-            },
-            paymentStatus: paymentData.mpesaReceiptNumber
-              ? "completed"
-              : "pending",
-          }),
+          body: JSON.stringify(orderData),
         });
 
-        const orderData = await orderResponse.json();
-        if (orderData.success) {
-          dispatch({ type: "ADD_ORDER", payload: orderData.data });
+        const backendData = await orderResponse.json();
+        if (backendData.success) {
+          dispatch({
+            type: "ADD_ORDER",
+            payload: {
+              ...orderData,
+              id: firebaseOrderId || backendData.data.id,
+            },
+          });
           if (paymentData.mpesaReceiptNumber) {
             toast.success("Order placed and payment confirmed!");
           } else {
             toast.success("Order placed! Payment confirmation pending...");
           }
         } else {
-          toast.error(orderData.message || "Order failed");
+          toast.error(backendData.message || "Order failed");
         }
       } catch (error) {
+        console.error("Order failed:", error);
         toast.error("Order failed");
       } finally {
         dispatch({ type: "SET_LOADING", payload: false });
@@ -248,25 +327,51 @@ export const AppProvider = ({ children }) => {
 
     loadTodaysMenu: async () => {
       try {
+        console.log("🔄 Loading today's menu...");
         const response = await fetch("/api/menu/today");
+        console.log("📡 Response status:", response.status);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
         const data = await response.json();
+        console.log("📋 Menu data received:", data);
+
         if (data.success) {
           dispatch({ type: "SET_TODAYS_MENU", payload: data.data });
+          console.log("✅ Today's menu loaded successfully");
+        } else {
+          console.error("❌ Menu API returned success: false", data);
         }
       } catch (error) {
-        console.error("Failed to load today's menu");
+        console.error("❌ Failed to load today's menu:", error.message);
+        console.error("🔍 Full error:", error);
       }
     },
 
     loadOrders: async () => {
       try {
+        console.log("🔄 Loading orders...");
         const response = await fetch("/api/orders");
+        console.log("📡 Orders response status:", response.status);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
         const data = await response.json();
+        console.log("📋 Orders data received:", data);
+
         if (data.success) {
           dispatch({ type: "SET_ORDERS", payload: data.data });
+          console.log("✅ Orders loaded successfully");
+        } else {
+          console.error("❌ Orders API returned success: false", data);
         }
       } catch (error) {
-        console.error("Failed to load orders");
+        console.error("❌ Failed to load orders:", error.message);
+        console.error("🔍 Full error:", error);
       }
     },
 
@@ -283,12 +388,29 @@ export const AppProvider = ({ children }) => {
     },
   };
 
-  // Load user from localStorage on app start
+  // Load user from localStorage and Firebase Auth on app start
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      dispatch({ type: "SET_USER", payload: JSON.parse(storedUser) });
-    }
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        const userData = {
+          id: firebaseUser.uid,
+          name: firebaseUser.displayName,
+          email: firebaseUser.email,
+          role: "customer", // Default role
+          photoURL: firebaseUser.photoURL,
+        };
+        dispatch({ type: "SET_USER", payload: userData });
+        localStorage.setItem("user", JSON.stringify(userData));
+      } else {
+        // Check localStorage as fallback
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          dispatch({ type: "SET_USER", payload: JSON.parse(storedUser) });
+        }
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   // Auto-refresh data every 30 seconds for real-time sync

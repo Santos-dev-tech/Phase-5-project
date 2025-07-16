@@ -13,10 +13,12 @@ import {
   TrendingUp,
   Award,
   CreditCard,
+  Database,
 } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 import { motion, AnimatePresence } from "framer-motion";
 import MpesaPayment from "@/components/MpesaPayment";
+import { auth, signInWithGoogle } from "@/lib/firebase";
 
 export default function Dashboard() {
   const { state, actions } = useApp();
@@ -25,10 +27,18 @@ export default function Dashboard() {
   const [likedMeals, setLikedMeals] = useState(new Set());
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedMealForPayment, setSelectedMealForPayment] = useState(null);
+  const [firebaseUser, setFirebaseUser] = useState(null);
 
   useEffect(() => {
     actions.loadTodaysMenu();
     actions.loadOrders();
+
+    // Monitor Firebase authentication state
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setFirebaseUser(user);
+    });
+
+    return () => unsubscribe();
   }, [state.user]);
 
   useEffect(() => {
@@ -136,6 +146,59 @@ export default function Dashboard() {
             </p>
           </div>
         </motion.div>
+
+        {/* Firebase Authentication Status */}
+        {state.user && !firebaseUser && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6"
+          >
+            <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50 shadow-lg">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Database className="w-5 h-5 text-blue-600" />
+                    <div>
+                      <p className="text-blue-900 font-medium">
+                        Sign in with Google for data sync
+                      </p>
+                      <p className="text-blue-700 text-sm">
+                        Keep your orders and preferences across all devices
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={signInWithGoogle}
+                    size="sm"
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Sign in with Google
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {state.user && firebaseUser && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6"
+          >
+            <Card className="border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 shadow-lg">
+              <CardContent className="p-3">
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <p className="text-green-900 font-medium text-sm">
+                    ✅ Data sync enabled - your orders are saved across devices
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
         {/* Current Order Status */}
         <AnimatePresence>

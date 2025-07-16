@@ -6,14 +6,6 @@
       "destination": "/index.html"
     }
   ],
-  "env": {
-    "MPESA_CONSUMER_KEY": "@mpesa_consumer_key",
-    "MPESA_CONSUMER_SECRET": "@mpesa_consumer_secret",
-    "MPESA_ENVIRONMENT": "production",
-    "MPESA_SHORT_CODE": "@mpesa_short_code",
-    "MPESA_PASSKEY": "@mpesa_passkey",
-    "MPESA_BUSINESS_PHONE": "254746013145"
-  },
   "buildCommand": "npm run build:client",
   "outputDirectory": "dist/spa",
   "installCommand": "npm install"
