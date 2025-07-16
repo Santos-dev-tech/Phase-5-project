@@ -212,21 +212,34 @@ export const AppProvider = ({ children }) => {
           status: "pending",
         };
 
-        // Save to Firebase
-        const firebaseOrderId = await addOrder(orderData);
+        // Try to save to Firebase (only if user is authenticated with Firebase)
+        let firebaseOrderId = null;
+        try {
+          firebaseOrderId = await addOrder(orderData);
+          console.log("✅ Order saved to Firebase:", firebaseOrderId);
 
-        // Also save transaction to Firebase
-        if (paymentData.mpesaReceiptNumber) {
-          await addTransaction({
-            userId: state.user.id,
-            orderId: firebaseOrderId,
-            type: "mpesa_payment",
-            amount: orderData.paymentData.amount,
-            phoneNumber: paymentData.phoneNumber,
-            mpesaReceiptNumber: paymentData.mpesaReceiptNumber,
-            checkoutRequestId: paymentData.checkoutRequestId,
-            status: "completed",
-          });
+          // Also save transaction to Firebase
+          if (paymentData.mpesaReceiptNumber) {
+            await addTransaction({
+              userId: state.user.id,
+              orderId: firebaseOrderId,
+              type: "mpesa_payment",
+              amount: orderData.paymentData.amount,
+              phoneNumber: paymentData.phoneNumber,
+              mpesaReceiptNumber: paymentData.mpesaReceiptNumber,
+              checkoutRequestId: paymentData.checkoutRequestId,
+              status: "completed",
+            });
+            console.log("✅ Transaction saved to Firebase");
+          }
+        } catch (firebaseError) {
+          console.warn(
+            "⚠️ Firebase save failed (user may not be authenticated with Google):",
+            firebaseError.message,
+          );
+          toast.warning(
+            "Note: To sync data across devices, please sign in with Google",
+          );
         }
 
         // Also save to existing backend API
@@ -240,7 +253,10 @@ export const AppProvider = ({ children }) => {
         if (backendData.success) {
           dispatch({
             type: "ADD_ORDER",
-            payload: { ...orderData, id: firebaseOrderId },
+            payload: {
+              ...orderData,
+              id: firebaseOrderId || backendData.data.id,
+            },
           });
           if (paymentData.mpesaReceiptNumber) {
             toast.success("Order placed and payment confirmed!");
