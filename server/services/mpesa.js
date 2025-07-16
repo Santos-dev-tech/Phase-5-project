@@ -75,7 +75,7 @@ class MpesaService {
         return this.accessToken;
       }
 
-      console.log("🔑 Getting real M-Pesa access token...");
+      console.log(`🔑 Getting ${this.environment} M-Pesa access token...`);
 
       const auth = Buffer.from(
         `${this.consumerKey}:${this.consumerSecret}`,
