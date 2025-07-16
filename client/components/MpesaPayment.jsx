@@ -144,6 +144,7 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
               checkoutRequestId: requestId,
               mpesaReceiptNumber: data.data.mpesaReceiptNumber,
               amount: data.data.amount,
+              phoneNumber: phoneNumber.replace(/\\D/g, ""),
             });
             return;
           } else if (status === "failed") {
