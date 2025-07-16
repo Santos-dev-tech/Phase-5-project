@@ -28,18 +28,27 @@ export default function Dashboard() {
 
   useEffect(() => {
     actions.loadTodaysMenu();
+    actions.loadOrders();
+  }, [state.user]);
+
+  useEffect(() => {
     if (state.user) {
-      // Load user's current order
+      // Load user's current active order only
       const userOrder = state.orders.find(
         (order) =>
-          order.customerId === state.user?.id && order.status !== "delivered",
+          order.customerId === state.user?.id &&
+          order.status !== "delivered" &&
+          order.status !== "cancelled",
       );
       setCurrentOrder(userOrder);
       if (userOrder) {
         setSelectedMeal(userOrder.mealId);
+      } else {
+        setCurrentOrder(null);
+        setSelectedMeal(null);
       }
     }
-  }, [state.user]);
+  }, [state.user, state.orders]);
 
   const handleOrderMeal = (meal) => {
     setSelectedMealForPayment(meal);
@@ -48,19 +57,15 @@ export default function Dashboard() {
 
   const handlePaymentSuccess = async (paymentData) => {
     setShowPaymentModal(false);
-    await actions.placeOrderWithPayment(selectedMealForPayment.id, {
-      phoneNumber: "0712345678", // This would come from the payment modal
-      amount: selectedMealForPayment.price,
-    });
-    setCurrentOrder(selectedMealForPayment);
-    setSelectedMeal(selectedMealForPayment.id);
+    await actions.placeOrderWithPayment(selectedMealForPayment.id, paymentData);
+    // Don't set currentOrder here - wait for the order to be confirmed via state updates
     setSelectedMealForPayment(null);
   };
 
   const handleQuickOrder = async (meal) => {
-    await actions.placeOrder(meal.id);
-    setCurrentOrder(meal);
-    setSelectedMeal(meal.id);
+    // Always use payment modal for orders
+    setSelectedMealForPayment(meal);
+    setShowPaymentModal(true);
   };
 
   const handleChangeOrder = () => {
@@ -354,7 +359,7 @@ export default function Dashboard() {
                           }
                         >
                           <ShoppingCart className="w-5 h-5 mr-2" />
-                          Order (Pay Later)
+                          Quick Order
                         </Button>
                       </div>
                     </div>
