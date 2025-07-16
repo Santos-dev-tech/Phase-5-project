@@ -24,6 +24,8 @@ export default function Dashboard() {
   const [selectedMeal, setSelectedMeal] = useState(null);
   const [currentOrder, setCurrentOrder] = useState(null);
   const [likedMeals, setLikedMeals] = useState(new Set());
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [selectedMealForPayment, setSelectedMealForPayment] = useState(null);
 
   useEffect(() => {
     actions.loadTodaysMenu();
