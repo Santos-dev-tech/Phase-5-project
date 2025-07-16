@@ -175,14 +175,26 @@ export default function Dashboard() {
         </AnimatePresence>
 
         {/* Today's Menu */}
-        <div className="mb-8">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-white mb-2">Today's Menu</h2>
-            <p className="text-orange-200 text-lg">
-              Chef's special selections for today
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-12"
+        >
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center px-6 py-3 bg-orange-500/20 backdrop-blur-md rounded-full text-orange-200 text-lg font-medium border border-orange-400/30 mb-6">
+              <Calendar className="w-5 h-5 mr-3" />
+              {getCurrentDate()}
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent mb-4">
+              Today's Menu
+            </h2>
+            <p className="text-gray-600 text-xl max-w-2xl mx-auto leading-relaxed">
+              Chef's special selections crafted with passion and delivered with
+              love
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Menu Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
