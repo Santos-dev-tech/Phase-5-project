@@ -570,6 +570,24 @@ class MpesaService {
       amount: 1000,
     };
   }
+
+  // Register a callback for payment status updates (for real-time notifications)
+  registerPaymentCallback(checkoutRequestId, callback) {
+    this.paymentCallbacks.set(checkoutRequestId, callback);
+    console.log(`📞 Registered real-time callback for: ${checkoutRequestId}`);
+  }
+
+  // Trigger payment callbacks for real-time notifications
+  triggerPaymentCallback(checkoutRequestId, status, data) {
+    const callback = this.paymentCallbacks.get(checkoutRequestId);
+    if (callback) {
+      console.log(
+        `🔔 Triggering real-time notification for: ${checkoutRequestId}`,
+      );
+      callback(status, data);
+      this.paymentCallbacks.delete(checkoutRequestId);
+    }
+  }
 }
 
 export default new MpesaService();
