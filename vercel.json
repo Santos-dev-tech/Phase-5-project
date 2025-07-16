@@ -2,22 +2,21 @@
   "version": 2,
   "builds": [
     {
-      "src": "dist/server/node-build.mjs",
+      "src": "api/index.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "dist/spa/**",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/dist/server/node-build.mjs"
+      "dest": "/api/index.js"
+    },
+    {
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
-      "dest": "/dist/spa/index.html"
+      "dest": "/index.html"
     }
   ],
   "env": {
@@ -28,8 +27,11 @@
     "MPESA_PASSKEY": "@mpesa_passkey"
   },
   "functions": {
-    "dist/server/node-build.mjs": {
+    "api/index.js": {
       "maxDuration": 30
     }
-  }
+  },
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/spa",
+  "installCommand": "npm install"
 }
