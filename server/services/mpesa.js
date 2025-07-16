@@ -334,8 +334,8 @@ class MpesaService {
 
         const timeSinceInitiation = Date.now() - pendingPayment.timestamp;
 
-        // Payment stays pending for at least 10 seconds (realistic time for user to act)
-        if (timeSinceInitiation < 10000) {
+        // Payment stays pending for at least 8 seconds (realistic time for user to act)
+        if (timeSinceInitiation < 8000) {
           console.log("⏳ Payment still pending - user hasn't acted yet");
           return {
             success: true,
@@ -350,9 +350,9 @@ class MpesaService {
           };
         }
 
-        // After 10 seconds, simulate user action (90% success rate)
+        // After 8 seconds, simulate user action (95% success rate for better UX)
         if (pendingPayment.status === "pending") {
-          const isSuccess = Math.random() > 0.1; // 90% success rate
+          const isSuccess = Math.random() > 0.05; // 95% success rate
 
           if (isSuccess) {
             // Mark as completed
@@ -361,6 +361,9 @@ class MpesaService {
             this.pendingPayments.set(checkoutRequestId, pendingPayment);
 
             console.log("✅ REALISTIC Demo: Payment completed by user!");
+            console.log(
+              `💰 Demo payment of KSH ${pendingPayment.amount} successfully processed`,
+            );
 
             return {
               success: true,
