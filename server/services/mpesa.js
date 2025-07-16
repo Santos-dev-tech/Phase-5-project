@@ -1,7 +1,7 @@
 import https from "https";
 import { Buffer } from "buffer";
 
-// M-Pesa Integration Service - Demo Mode with Real API Structure
+// Enhanced M-Pesa Integration Service - Realistic Payment Flow
 class MpesaService {
   constructor() {
     // Check if we have real M-Pesa credentials
@@ -16,7 +16,7 @@ class MpesaService {
     this.consumerKey = process.env.MPESA_CONSUMER_KEY || "DEMO_CONSUMER_KEY";
     this.consumerSecret =
       process.env.MPESA_CONSUMER_SECRET || "DEMO_CONSUMER_SECRET";
-    this.environment = process.env.MPESA_ENVIRONMENT || "demo"; // demo, sandbox, production
+    this.environment = process.env.MPESA_ENVIRONMENT || "demo";
 
     // M-Pesa endpoints
     this.baseUrl =
@@ -30,9 +30,7 @@ class MpesaService {
       process.env.MPESA_PASSKEY ||
       "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
 
-    // Your business phone number where funds will be deposited
-    this.businessPhoneNumber = "254746013145"; // 0746013145 in international format
-
+    this.businessPhoneNumber = "254746013145";
     this.callbackUrl =
       process.env.MPESA_CALLBACK_URL ||
       "http://localhost:8080/api/payments/mpesa/callback";
@@ -41,10 +39,13 @@ class MpesaService {
     this.accessToken = null;
     this.tokenExpiry = null;
 
+    // CRITICAL: Payment tracking for realistic flow
+    this.pendingPayments = new Map();
+
     console.log(`🔧 M-Pesa Service initialized:`);
     console.log(`   Environment: ${this.environment}`);
     console.log(
-      `   Mode: ${this.hasRealCredentials ? "REAL API" : "DEMO MODE"}`,
+      `   Mode: ${this.hasRealCredentials ? "REAL API" : "REALISTIC DEMO"}`,
     );
     console.log(`   Business Account: 0746013145`);
   }
@@ -52,7 +53,6 @@ class MpesaService {
   // Get access token from M-Pesa (with demo fallback)
   async getAccessToken() {
     try {
-      // Check if we have a valid cached token
       if (
         this.accessToken &&
         this.tokenExpiry &&
@@ -63,7 +63,7 @@ class MpesaService {
 
       // Demo mode - return mock token
       if (!this.hasRealCredentials || this.environment === "demo") {
-        console.log("🎭 Using demo M-Pesa token");
+        console.log("🎭 Using realistic demo M-Pesa token");
         this.accessToken = "demo_access_token_" + Date.now();
         this.tokenExpiry = new Date(Date.now() + 55 * 60 * 1000);
         return this.accessToken;
@@ -95,9 +95,7 @@ class MpesaService {
       }
     } catch (error) {
       console.error("❌ Error getting M-Pesa access token:", error.message);
-
-      // Fallback to demo mode if real API fails
-      console.log("🔄 Falling back to demo mode");
+      console.log("🔄 Falling back to realistic demo mode");
       this.accessToken = "demo_access_token_" + Date.now();
       this.tokenExpiry = new Date(Date.now() + 55 * 60 * 1000);
       return this.accessToken;
@@ -128,7 +126,7 @@ class MpesaService {
           "Content-Type": "application/json",
           ...headers,
         },
-        timeout: 30000, // 30 second timeout
+        timeout: 30000,
       };
 
       if (data && method !== "GET") {
@@ -183,7 +181,7 @@ class MpesaService {
     });
   }
 
-  // Initiate STK Push (with demo mode support)
+  // CRITICAL: Initiate STK Push with REALISTIC payment flow
   async initiateSTKPush(
     phoneNumber,
     amount,
@@ -192,20 +190,35 @@ class MpesaService {
   ) {
     try {
       console.log(
-        `💳 Initiating M-Pesa payment: ${phoneNumber} - KSH ${amount}`,
+        `💳 Initiating REALISTIC M-Pesa payment: ${phoneNumber} - KSH ${amount}`,
       );
 
       const formattedPhone = this.formatPhoneNumber(phoneNumber);
+      const checkoutRequestId =
+        "ws_CO_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
 
-      // Demo mode - simulate successful STK push
+      // Demo mode - simulate REALISTIC STK push that requires user action
       if (!this.hasRealCredentials || this.environment === "demo") {
-        console.log("🎭 Demo Mode: Simulating STK push");
+        console.log(
+          "🎭 REALISTIC Demo Mode: Simulating STK push that REQUIRES user action",
+        );
+
+        // Store as pending payment - user MUST complete this
+        this.pendingPayments.set(checkoutRequestId, {
+          phoneNumber: formattedPhone,
+          amount: amount,
+          accountReference: accountReference,
+          transactionDesc: transactionDesc,
+          status: "pending",
+          timestamp: Date.now(),
+          requiresUserAction: true,
+        });
 
         const mockResponse = {
           success: true,
           data: {
             MerchantRequestID: "demo_merchant_" + Date.now(),
-            CheckoutRequestID: "ws_CO_" + Date.now(),
+            CheckoutRequestID: checkoutRequestId,
             ResponseCode: "0",
             ResponseDescription: "Success. Request accepted for processing",
             CustomerMessage:
@@ -213,8 +226,11 @@ class MpesaService {
           },
         };
 
-        console.log("✅ Demo STK push successful");
-        console.log("💰 Demo: Funds will be deposited to 0746013145");
+        console.log(
+          "📤 REALISTIC Demo STK push sent - WAITING for user action",
+        );
+        console.log("⏳ Payment will remain PENDING until user action");
+
         return mockResponse;
       }
 
@@ -227,7 +243,7 @@ class MpesaService {
         Password: password,
         Timestamp: timestamp,
         TransactionType: "CustomerPayBillOnline",
-        Amount: Math.round(amount * 100), // Convert to cents
+        Amount: Math.round(amount * 100),
         PartyA: formattedPhone,
         PartyB: this.shortCode,
         PhoneNumber: formattedPhone,
@@ -251,6 +267,17 @@ class MpesaService {
       console.log("✅ Real STK push response received");
 
       if (response.ResponseCode === "0") {
+        // Store real payment as pending
+        this.pendingPayments.set(response.CheckoutRequestID, {
+          phoneNumber: formattedPhone,
+          amount: amount,
+          accountReference: accountReference,
+          transactionDesc: transactionDesc,
+          status: "pending",
+          timestamp: Date.now(),
+          requiresUserAction: true,
+        });
+
         return {
           success: true,
           data: {
@@ -272,26 +299,6 @@ class MpesaService {
       }
     } catch (error) {
       console.error("❌ STK Push error:", error.message);
-
-      // Fallback to demo success for development
-      if (
-        this.environment === "demo" ||
-        error.message.includes("Network error")
-      ) {
-        console.log("🔄 Network error, falling back to demo mode");
-        return {
-          success: true,
-          data: {
-            MerchantRequestID: "fallback_merchant_" + Date.now(),
-            CheckoutRequestID: "ws_CO_fallback_" + Date.now(),
-            ResponseCode: "0",
-            ResponseDescription: "Success (Demo Mode)",
-            CustomerMessage:
-              "Demo: Payment request simulated. In real mode, check your phone for M-Pesa prompt.",
-          },
-        };
-      }
-
       return {
         success: false,
         error: error.message || "Failed to initiate payment",
@@ -299,46 +306,113 @@ class MpesaService {
     }
   }
 
-  // Query STK Push transaction status (with demo mode)
+  // CRITICAL: Query STK Push transaction status with REALISTIC delays
   async querySTKPushStatus(checkoutRequestId) {
     try {
-      console.log(`🔍 Checking payment status: ${checkoutRequestId}`);
+      console.log(`🔍 Checking REALISTIC payment status: ${checkoutRequestId}`);
 
-      // Demo mode - simulate payment completion after delay
+      const pendingPayment = this.pendingPayments.get(checkoutRequestId);
+
+      if (!pendingPayment) {
+        return {
+          success: false,
+          error: "Payment not found",
+        };
+      }
+
+      // Demo mode - simulate REALISTIC payment flow with user interaction
       if (
         !this.hasRealCredentials ||
         this.environment === "demo" ||
         checkoutRequestId.includes("demo") ||
-        checkoutRequestId.includes("fallback")
+        checkoutRequestId.includes("ws_CO_")
       ) {
-        console.log("🎭 Demo Mode: Simulating payment completion");
+        console.log(
+          "🎭 REALISTIC Demo Mode: Checking payment completion status",
+        );
 
-        // Simulate random success/failure for demo
-        const isSuccess = Math.random() > 0.1; // 90% success rate in demo
+        const timeSinceInitiation = Date.now() - pendingPayment.timestamp;
 
-        if (isSuccess) {
+        // Payment stays pending for at least 10 seconds (realistic time for user to act)
+        if (timeSinceInitiation < 10000) {
+          console.log("⏳ Payment still pending - user hasn't acted yet");
           return {
             success: true,
             data: {
               ResponseCode: "0",
-              ResponseDescription: "Success",
+              ResponseDescription: "Request still pending",
               CheckoutRequestID: checkoutRequestId,
-              ResultCode: "0",
-              ResultDesc: "The service request is processed successfully.",
-            },
-          };
-        } else {
-          return {
-            success: true,
-            data: {
-              ResponseCode: "1",
-              ResponseDescription: "Failed",
-              CheckoutRequestID: checkoutRequestId,
-              ResultCode: "1032",
-              ResultDesc: "Request cancelled by user",
+              ResultCode: null,
+              ResultDesc: "Payment request is still pending user action",
+              status: "pending",
             },
           };
         }
+
+        // After 10 seconds, simulate user action (90% success rate)
+        if (pendingPayment.status === "pending") {
+          const isSuccess = Math.random() > 0.1; // 90% success rate
+
+          if (isSuccess) {
+            // Mark as completed
+            pendingPayment.status = "completed";
+            pendingPayment.mpesaReceiptNumber = "DEMO" + Date.now();
+            this.pendingPayments.set(checkoutRequestId, pendingPayment);
+
+            console.log("✅ REALISTIC Demo: Payment completed by user!");
+
+            return {
+              success: true,
+              data: {
+                ResponseCode: "0",
+                ResponseDescription: "Success",
+                CheckoutRequestID: checkoutRequestId,
+                ResultCode: "0",
+                ResultDesc: "The service request is processed successfully.",
+                status: "completed",
+                mpesaReceiptNumber: pendingPayment.mpesaReceiptNumber,
+                amount: pendingPayment.amount,
+              },
+            };
+          } else {
+            // Mark as failed
+            pendingPayment.status = "failed";
+            this.pendingPayments.set(checkoutRequestId, pendingPayment);
+
+            console.log("❌ REALISTIC Demo: Payment cancelled by user");
+
+            return {
+              success: true,
+              data: {
+                ResponseCode: "1",
+                ResponseDescription: "Failed",
+                CheckoutRequestID: checkoutRequestId,
+                ResultCode: "1032",
+                ResultDesc: "Request cancelled by user",
+                status: "failed",
+              },
+            };
+          }
+        }
+
+        // Return current status
+        return {
+          success: true,
+          data: {
+            ResponseCode: pendingPayment.status === "completed" ? "0" : "1",
+            ResponseDescription:
+              pendingPayment.status === "completed" ? "Success" : "Failed",
+            CheckoutRequestID: checkoutRequestId,
+            ResultCode: pendingPayment.status === "completed" ? "0" : "1032",
+            ResultDesc:
+              pendingPayment.status === "completed"
+                ? "The service request is processed successfully."
+                : "Request cancelled by user",
+            status: pendingPayment.status,
+            mpesaReceiptNumber: pendingPayment.mpesaReceiptNumber,
+            amount: pendingPayment.amount,
+          },
+        };
       }
 
       // Real API mode
@@ -368,17 +442,9 @@ class MpesaService {
       };
     } catch (error) {
       console.error("❌ Status query error:", error.message);
-
-      // Fallback to demo completion
       return {
-        success: true,
-        data: {
-          ResponseCode: "0",
-          ResponseDescription: "Success (Demo Mode)",
-          CheckoutRequestID: checkoutRequestId,
-          ResultCode: "0",
-          ResultDesc: "Demo: Payment completed successfully",
-        },
+        success: false,
+        error: error.message,
       };
     }
   }
@@ -439,6 +505,14 @@ class MpesaService {
 
         console.log(`✅ Payment successful! Receipt: ${mpesaReceiptNumber}`);
 
+        // Update pending payment
+        const pendingPayment = this.pendingPayments.get(checkoutRequestId);
+        if (pendingPayment) {
+          pendingPayment.status = "completed";
+          pendingPayment.mpesaReceiptNumber = mpesaReceiptNumber;
+          this.pendingPayments.set(checkoutRequestId, pendingPayment);
+        }
+
         return {
           success: true,
           checkoutRequestId,
@@ -449,6 +523,14 @@ class MpesaService {
         };
       } else {
         console.log(`❌ Payment failed: ${resultDesc}`);
+
+        // Update pending payment
+        const pendingPayment = this.pendingPayments.get(checkoutRequestId);
+        if (pendingPayment) {
+          pendingPayment.status = "failed";
+          this.pendingPayments.set(checkoutRequestId, pendingPayment);
+        }
+
         return {
           success: false,
           checkoutRequestId,
@@ -478,7 +560,7 @@ class MpesaService {
       success: true,
       receipt: mpesaReceiptNumber,
       status: "completed",
-      amount: 1000, // Demo amount
+      amount: 1000,
     };
   }
 }
