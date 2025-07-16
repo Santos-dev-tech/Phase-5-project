@@ -152,6 +152,16 @@ export const checkPaymentStatus = async (req, res) => {
 
         console.log(`✅ Payment completed for ${transaction.phoneNumber}`);
         console.log(`💰 KSH ${transaction.amount} deposited to 0746013145`);
+      } else if (
+        resultCode === null ||
+        resultCode === undefined ||
+        responseData.status === "pending"
+      ) {
+        // Payment still pending - user hasn't acted yet
+        transaction.status = "pending";
+        transaction.resultDesc =
+          responseData.ResultDesc || "Payment request is pending user action";
+        console.log(`⏳ Payment still pending for ${transaction.phoneNumber}`);
       } else if (resultCode === "1032") {
         // Payment cancelled
         transaction.status = "cancelled";
