@@ -259,12 +259,18 @@ export default function Dashboard() {
                         </Button>
                       </div>
 
-                      {meal.category === "Main Course" && (
-                        <Badge className="absolute top-4 left-4 bg-orange-500 text-white">
-                          <Award className="w-3 h-3 mr-1" />
-                          Chef's Choice
+                      <div className="absolute top-4 left-4 flex flex-col space-y-2">
+                        {meal.category === "Main Course" && (
+                          <Badge className="bg-orange-500 text-white">
+                            <Award className="w-3 h-3 mr-1" />
+                            Chef's Choice
+                          </Badge>
+                        )}
+                        <Badge className="bg-green-500 text-white">
+                          <Smartphone className="w-3 h-3 mr-1" />
+                          M-Pesa Pay
                         </Badge>
-                      )}
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent className="p-6">
