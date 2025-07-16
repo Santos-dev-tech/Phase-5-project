@@ -27,10 +27,18 @@ export default function Dashboard() {
   const [likedMeals, setLikedMeals] = useState(new Set());
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedMealForPayment, setSelectedMealForPayment] = useState(null);
+  const [firebaseUser, setFirebaseUser] = useState(null);
 
   useEffect(() => {
     actions.loadTodaysMenu();
     actions.loadOrders();
+
+    // Monitor Firebase authentication state
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setFirebaseUser(user);
+    });
+
+    return () => unsubscribe();
   }, [state.user]);
 
   useEffect(() => {
