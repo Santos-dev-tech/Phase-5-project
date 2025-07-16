@@ -412,6 +412,12 @@ export default function Dashboard() {
                               },
                             )}
                           </p>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <Smartphone className="w-4 h-4 text-green-600" />
+                            <span className="text-sm text-green-600 font-medium">
+                              Paid via M-Pesa
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div className="text-right">
