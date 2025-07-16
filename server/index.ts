@@ -54,5 +54,13 @@ export function createServer() {
   app.put("/api/orders/:orderId/status", updateOrderStatus);
   app.get("/api/customers/:customerId/orders", getCustomerOrders);
 
+  // M-Pesa Payment Routes
+  app.post("/api/payments/mpesa/initiate", initiateMpesaPayment);
+  app.get("/api/payments/mpesa/status/:checkoutRequestId", checkPaymentStatus);
+  app.post("/api/payments/mpesa/callback", handleMpesaCallback);
+  app.get("/api/payments/transactions", getPaymentTransactions);
+  app.get("/api/payments/mpesa/test", testMpesaConfig);
+  app.post("/api/payments/mpesa/verify", verifyPayment);
+
   return app;
 }
