@@ -32,10 +32,10 @@ class MpesaService {
       process.env.MPESA_PASSKEY ||
       "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"; // Sandbox passkey
 
-    this.businessPhoneNumber = "254746013145";
+    this.businessPhoneNumber = "254746013145"; // Your business phone number
     this.callbackUrl =
       process.env.MPESA_CALLBACK_URL ||
-      "https://702459ea414444aab3325864e4f5a486-afb6bdbf03154fb986d913ce5.fly.dev/api/payments/mpesa/callback";
+      "https://your-domain.com/api/payments/mpesa/callback"; // Update with your domain when deploying
 
     // Cache for access token
     this.accessToken = null;
