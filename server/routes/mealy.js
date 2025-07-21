@@ -116,8 +116,6 @@ let orders = [
     price: 15.99,
     status: "preparing",
     orderTime: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // 15 minutes ago
-    paymentRef: null,
-    paymentStatus: "pending",
   },
   {
     id: 2,
@@ -128,8 +126,6 @@ let orders = [
     price: 13.99,
     status: "ready",
     orderTime: new Date(Date.now() - 25 * 60 * 1000).toISOString(), // 25 minutes ago
-    paymentRef: "ws_CO_123456789",
-    paymentStatus: "completed",
   },
   {
     id: 3,
@@ -140,8 +136,6 @@ let orders = [
     price: 18.99,
     status: "delivered",
     orderTime: new Date(Date.now() - 45 * 60 * 1000).toISOString(), // 45 minutes ago
-    paymentRef: "ws_CO_987654321",
-    paymentStatus: "completed",
   },
 ];
 
@@ -211,36 +205,13 @@ export const deleteMealOption = (req, res) => {
 
 // Place order
 export const placeOrder = (req, res) => {
-  const {
-    customerId,
-    customerName,
-    mealId,
-    paymentRef,
-    paymentData,
-    paymentStatus,
-  } = req.body;
+  const { customerId, customerName, mealId } = req.body;
 
   const meal = mealOptions.find((m) => m.id === mealId);
   if (!meal || !meal.available) {
     return res.status(400).json({
       success: false,
       message: "Meal not available",
-    });
-  }
-
-  // Check if customer already has an active order
-  const existingOrder = orders.find(
-    (order) =>
-      order.customerId === customerId &&
-      order.status !== "delivered" &&
-      order.status !== "cancelled",
-  );
-
-  if (existingOrder) {
-    return res.status(400).json({
-      success: false,
-      message:
-        "You already have an active order. Please wait for it to be completed.",
     });
   }
 
@@ -251,12 +222,8 @@ export const placeOrder = (req, res) => {
     mealId,
     meal: meal.name,
     price: meal.price,
-    status: paymentStatus === "completed" ? "preparing" : "pending_payment",
+    status: "preparing",
     orderTime: new Date().toISOString(),
-    paymentRef: paymentRef || paymentData?.checkoutRequestId || null,
-    paymentStatus:
-      paymentStatus || (paymentRef ? "pending" : "cash_on_delivery"),
-    paymentData: paymentData || null,
   };
 
   orders.push(newOrder);
