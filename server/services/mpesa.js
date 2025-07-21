@@ -11,7 +11,7 @@ class MpesaService {
       this.consumerKey !== "your_consumer_key_here"
     );
 
-    // M-Pesa credentials
+    // M-Pesa credentials - User's Real App Credentials
     this.consumerKey =
       process.env.MPESA_CONSUMER_KEY ||
       "F7id9AW94hl3BxC1aedkJaCy3I6HJmHAaUAfNQYzyOTaKzLJ";
