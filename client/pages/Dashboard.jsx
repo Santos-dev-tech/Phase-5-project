@@ -417,7 +417,9 @@ export default function Dashboard() {
               setSelectedMealForPayment(null);
             }}
             meal={selectedMealForPayment}
-            onPaymentSuccess={() => handlePaymentSuccess(selectedMealForPayment)}
+            onPaymentSuccess={() =>
+              handlePaymentSuccess(selectedMealForPayment)
+            }
           />
         )}
       </div>

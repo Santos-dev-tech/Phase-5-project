@@ -100,7 +100,9 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
         );
 
         console.log("✅ STK Push sent successfully");
-        console.log("💰 Funds will be deposited to: 0746013145 (Your M-Pesa Business Account)");
+        console.log(
+          "💰 Funds will be deposited to: 0746013145 (Your M-Pesa Business Account)",
+        );
 
         // Start polling for payment status
         pollPaymentStatus(data.data.checkoutRequestId);
