@@ -141,7 +141,7 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
               `Payment successful! Receipt: ${data.data.mpesaReceiptNumber}`,
             );
             toast.success(
-              "🎉 Payment completed! Money deposited to 0746013145",
+              "🎉 Payment completed! Money deposited to your M-Pesa business account 0746013145",
             );
 
             // Try to save transaction to Firebase
