@@ -100,7 +100,9 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
         );
 
         console.log("✅ STK Push sent successfully");
-        console.log("💰 Funds will be deposited to: 0746013145");
+        console.log(
+          "💰 Funds will be deposited to: 0746013145 (Your M-Pesa Business Account)",
+        );
 
         // Start polling for payment status
         pollPaymentStatus(data.data.checkoutRequestId);
@@ -141,7 +143,7 @@ const MpesaPayment = ({ isOpen, onClose, meal, onPaymentSuccess }) => {
               `Payment successful! Receipt: ${data.data.mpesaReceiptNumber}`,
             );
             toast.success(
-              "🎉 Payment completed! Money deposited to 0746013145",
+              "🎉 Payment completed! Money deposited to your M-Pesa business account 0746013145",
             );
 
             // Try to save transaction to Firebase

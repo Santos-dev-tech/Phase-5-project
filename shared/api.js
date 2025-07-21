@@ -4,9 +4,5 @@
  * and/or small pure JS functions that can be used on both client and server
  */
 
-/**
- * Example response type for /api/demo
- */
-export interface DemoResponse {
-  message: string;
-}
+// Note: Interface definitions removed as they're TypeScript-specific
+// The DemoResponse interface was converted to JSDoc comments if needed

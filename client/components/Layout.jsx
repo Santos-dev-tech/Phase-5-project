@@ -210,18 +210,14 @@ export default function Layout({ children }) {
                 <p className="text-gray-300 mb-6 max-w-md">
                   Experience culinary excellence at Mealy. Our passionate chefs
                   craft each dish with the finest ingredients, bringing you
-                  flavors that tell a story. Now with convenient M-Pesa
-                  payments!
+                  flavors that tell a story.
                 </p>
                 <div className="flex items-center space-x-4">
                   <div className="bg-green-600 px-3 py-1 rounded-full text-sm font-medium">
                     ★ 4.9 Rating
                   </div>
                   <div className="bg-orange-600 px-3 py-1 rounded-full text-sm font-medium">
-                    15K+ Orders
-                  </div>
-                  <div className="bg-blue-600 px-3 py-1 rounded-full text-sm font-medium">
-                    M-Pesa Ready
+                    10K+ Orders
                   </div>
                 </div>
               </div>
@@ -271,22 +267,19 @@ export default function Layout({ children }) {
                 <ul className="space-y-3 text-gray-300">
                   <li>
                     <span className="block">123 Culinary Street</span>
-                    <span className="block">Nairobi, Kenya</span>
+                    <span className="block">Food District, FD 12345</span>
                   </li>
                   <li className="text-orange-400 font-semibold">
-                    +254 712 345 678
+                    (555) 123-MEAL
                   </li>
                   <li>hello@mealy.restaurant</li>
-                  <li className="text-green-400 font-semibold">
-                    Pay via M-Pesa: 174379
-                  </li>
                 </ul>
               </div>
             </div>
             <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
               <p>
                 &copy; 2024 Mealy Fine Dining. Crafted with passion for food
-                lovers. M-Pesa payments powered by Safaricom.
+                lovers.
               </p>
             </div>
           </div>

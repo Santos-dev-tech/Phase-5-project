@@ -11,7 +11,7 @@ class MpesaService {
       this.consumerKey !== "your_consumer_key_here"
     );
 
-    // M-Pesa credentials
+    // M-Pesa credentials - User's Real App Credentials
     this.consumerKey =
       process.env.MPESA_CONSUMER_KEY ||
       "F7id9AW94hl3BxC1aedkJaCy3I6HJmHAaUAfNQYzyOTaKzLJ";
@@ -27,15 +27,15 @@ class MpesaService {
         : "https://sandbox.safaricom.co.ke";
 
     // Business configuration
-    this.shortCode = process.env.MPESA_SHORT_CODE || "174379";
+    this.shortCode = process.env.MPESA_SHORT_CODE || "174379"; // Sandbox shortcode
     this.passkey =
       process.env.MPESA_PASSKEY ||
-      "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
+      "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"; // Sandbox passkey
 
-    this.businessPhoneNumber = "254746013145";
+    this.businessPhoneNumber = "254746013145"; // Your business phone number
     this.callbackUrl =
       process.env.MPESA_CALLBACK_URL ||
-      "https://702459ea414444aab3325864e4f5a486-afb6bdbf03154fb986d913ce5.fly.dev/api/payments/mpesa/callback";
+      "https://your-domain.com/api/payments/mpesa/callback"; // Update with your domain when deploying
 
     // Cache for access token
     this.accessToken = null;

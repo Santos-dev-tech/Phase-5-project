@@ -67,17 +67,17 @@ export default function AdminDashboard() {
     setIsAddMealOpen(false);
   };
 
-  const handleDeleteMeal = async (mealId: number) => {
+  const handleDeleteMeal = async (mealId) => {
     if (window.confirm("Are you sure you want to delete this meal?")) {
       await actions.deleteMeal(mealId);
     }
   };
 
-  const updateOrderStatus = async (orderId: number, newStatus: string) => {
+  const updateOrderStatus = async (orderId, newStatus) => {
     await actions.updateOrderStatus(orderId, newStatus);
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case "preparing":
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
