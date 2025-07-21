@@ -40,9 +40,16 @@ export default function Dashboard() {
   }, [state.user]);
 
   const handleOrderMeal = async (meal) => {
-    await actions.placeOrder(meal.id);
+    setSelectedMealForPayment(meal);
+    setIsPaymentModalOpen(true);
+  };
+
+  const handlePaymentSuccess = (meal) => {
     setCurrentOrder(meal);
     setSelectedMeal(meal.id);
+    setIsPaymentModalOpen(false);
+    setSelectedMealForPayment(null);
+    actions.placeOrder(meal.id);
   };
 
   const handleChangeOrder = () => {
