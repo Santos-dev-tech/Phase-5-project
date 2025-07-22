@@ -396,7 +396,7 @@ export default function Dashboard() {
                 </Card>
               ))}
 
-            {state.orders.filter((order) => order.customerId === state.user?.id)
+            {state.orders.filter((order) => order.customerId === user?.id)
               .length === 0 && (
               <div className="text-center py-12">
                 <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
