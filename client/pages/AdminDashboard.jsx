@@ -29,6 +29,8 @@ import {
   Award,
 } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
+import { useSelector } from "react-redux";
+import { selectUser } from "@/store/slices/authSlice";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function AdminDashboard() {
