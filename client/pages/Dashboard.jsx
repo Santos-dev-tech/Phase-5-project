@@ -343,7 +343,7 @@ export default function Dashboard() {
 
           <div className="space-y-4">
             {state.orders
-              .filter((order) => order.customerId === state.user?.id)
+              .filter((order) => order.customerId === user?.id)
               .slice(0, 5)
               .map((order) => (
                 <Card
