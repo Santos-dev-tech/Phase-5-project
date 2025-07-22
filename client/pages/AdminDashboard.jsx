@@ -35,6 +35,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function AdminDashboard() {
   const { state, actions } = useApp();
+  const user = useSelector(selectUser);
   const [isAddMealOpen, setIsAddMealOpen] = useState(false);
   const [newMeal, setNewMeal] = useState({
     name: "",
