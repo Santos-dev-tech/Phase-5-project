@@ -148,7 +148,7 @@ export default function AdminDashboard() {
                       Today's Revenue
                     </p>
                     <p className="text-3xl font-bold">
-                      ${state.totalRevenue.toFixed(2)}
+                      {state.totalRevenue.toFixed(2)}
                     </p>
                   </div>
                   <div className="bg-white/20 p-3 rounded-2xl">
@@ -192,7 +192,7 @@ export default function AdminDashboard() {
                       Average Order
                     </p>
                     <p className="text-3xl font-bold">
-                      ${avgOrderValue.toFixed(2)}
+                      {avgOrderValue.toFixed(2)}
                     </p>
                   </div>
                   <div className="bg-white/20 p-3 rounded-2xl">
@@ -311,7 +311,7 @@ export default function AdminDashboard() {
                             <div className="flex items-center space-x-4">
                               <div className="text-right">
                                 <p className="text-2xl font-bold text-gray-900">
-                                  ${order.price}
+                                  {order.price}
                                 </p>
                                 <Badge className={getStatusColor(order.status)}>
                                   {order.status.charAt(0).toUpperCase() +
@@ -419,7 +419,7 @@ export default function AdminDashboard() {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="price" className="font-semibold">
-                            Price ($)
+                            Price
                           </Label>
                           <Input
                             id="price"
@@ -525,7 +525,7 @@ export default function AdminDashboard() {
                             </div>
                             <div className="flex items-center justify-between">
                               <span className="text-2xl font-bold text-orange-600">
-                                ${meal.price}
+                                {meal.price}
                               </span>
                               <span className="text-sm text-gray-500 font-medium">
                                 {meal.prepTime}
@@ -597,7 +597,7 @@ export default function AdminDashboard() {
                               {meal.name}
                             </h3>
                             <p className="text-sm text-gray-600">
-                              ${meal.price}
+                              {meal.price}
                             </p>
                           </div>
                         </div>
