@@ -1,15 +1,22 @@
 [build]
-  command = "npm run build:client"
+  command = "npm run build"
   functions = "netlify/functions"
   publish = "dist/spa"
 
+[build.environment]
+  NODE_VERSION = "20"
 
 [functions]
-  external_node_modules = ["express"]
+  external_node_modules = ["express", "cors", "jsonwebtoken", "bcryptjs", "pg", "dotenv", "express-rate-limit"]
   node_bundler = "esbuild"
-  
+
 [[redirects]]
   force = true
   from = "/api/*"
   status = 200
   to = "/.netlify/functions/api/:splat"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
