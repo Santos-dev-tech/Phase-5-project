@@ -2,18 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["dist/spa/**", "api/**", "server/**", "shared/**"]
-      }
+      "src": "dist/spa/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node"
     }
   ],
-  "functions": {
-    "api/index.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
   "routes": [
     {
       "src": "/api/(.*)",
@@ -21,7 +17,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/dist/spa/index.html"
+      "dest": "/dist/spa/$1"
     }
   ]
 }
