@@ -10,13 +10,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useApp } from "@/contexts/AppContext";
+import { useSelector, useDispatch } from "react-redux";
+import { selectUser, logoutUser } from "@/store/slices/authSlice";
 
 export default function Layout({ children }) {
   const navigate = useNavigate();
   const { state, actions } = useApp();
+  const user = useSelector(selectUser);
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
-    actions.logout();
+    dispatch(logoutUser());
     navigate("/");
   };
 
@@ -60,15 +64,15 @@ export default function Layout({ children }) {
                 >
                   Home
                 </Link>
-                {state.user && (
+                {user && (
                   <>
                     <Link
                       to="/dashboard"
                       className="text-gray-700 hover:text-orange-600 font-semibold transition-all duration-300 hover:scale-105"
                     >
-                      {state.user.role === "admin" ? "Orders" : "Dashboard"}
+                      {user.role === "admin" ? "Orders" : "Dashboard"}
                     </Link>
-                    {state.user.role === "admin" && (
+                    {user.role === "admin" && (
                       <Link
                         to="/admin"
                         className="text-gray-700 hover:text-orange-600 font-semibold transition-all duration-300 hover:scale-105 relative"
@@ -87,10 +91,10 @@ export default function Layout({ children }) {
 
               {/* User Menu */}
               <div className="flex items-center space-x-4">
-                {state.user ? (
+                {user ? (
                   <div className="flex items-center space-x-3">
                     {/* Notifications for Admin */}
-                    {state.user.role === "admin" && (
+                    {user.role === "admin" && (
                       <div className="relative">
                         <Button
                           variant="ghost"
@@ -127,10 +131,10 @@ export default function Layout({ children }) {
                           </div>
                           <div className="flex flex-col space-y-1 leading-none">
                             <p className="font-semibold text-gray-900">
-                              {state.user.name}
+                              {user.fullName || user.name}
                             </p>
                             <p className="text-sm text-gray-600 capitalize">
-                              {state.user.role === "admin"
+                              {user.role === "admin"
                                 ? "Restaurant Manager"
                                 : "Valued Customer"}
                             </p>
@@ -146,7 +150,7 @@ export default function Layout({ children }) {
                             Dashboard
                           </Link>
                         </DropdownMenuItem>
-                        {state.user.role === "admin" && (
+                        {user.role === "admin" && (
                           <DropdownMenuItem asChild>
                             <Link
                               to="/admin"

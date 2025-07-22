@@ -31,6 +31,16 @@ pool.on("error", (err) => {
 
 // Helper function to execute queries
 export const query = async (text, params) => {
+  // Skip query if database is not configured
+  if (
+    process.env.DB_PASSWORD === "[YOUR-PASSWORD]" ||
+    !process.env.DB_PASSWORD ||
+    process.env.DB_PASSWORD === "postgres"
+  ) {
+    console.log("⚠️  Database not configured - skipping query");
+    return { rows: [] };
+  }
+
   const start = Date.now();
   try {
     const res = await pool.query(text, params);
@@ -52,11 +62,24 @@ export const getClient = async () => {
 
 // Helper function to initialize database
 export const initializeDatabase = async () => {
+  // Skip database initialization if password is not configured
+  if (
+    process.env.DB_PASSWORD === "[YOUR-PASSWORD]" ||
+    !process.env.DB_PASSWORD ||
+    process.env.DB_PASSWORD === "postgres"
+  ) {
+    console.log("⚠️  Database not configured - skipping initialization");
+    console.log(
+      "   To enable database features, please set proper DB_PASSWORD in .env file",
+    );
+    return;
+  }
+
   try {
     // Check if tables exist
     const tableCheck = await query(`
-      SELECT table_name 
-      FROM information_schema.tables 
+      SELECT table_name
+      FROM information_schema.tables
       WHERE table_schema = 'public' AND table_name = 'users'
     `);
 
@@ -72,6 +95,7 @@ export const initializeDatabase = async () => {
     }
   } catch (error) {
     console.error("💥 Error initializing database:", error);
+    console.log("   Application will continue without database features");
   }
 };
 

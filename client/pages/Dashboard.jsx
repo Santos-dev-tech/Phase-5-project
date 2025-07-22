@@ -14,11 +14,14 @@ import {
   Award,
 } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
+import { useSelector } from "react-redux";
+import { selectUser } from "@/store/slices/authSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import MpesaPayment from "@/components/MpesaPayment";
 
 export default function Dashboard() {
   const { state, actions } = useApp();
+  const user = useSelector(selectUser);
   const [selectedMeal, setSelectedMeal] = useState(null);
   const [currentOrder, setCurrentOrder] = useState(null);
   const [likedMeals, setLikedMeals] = useState(new Set());
@@ -27,18 +30,18 @@ export default function Dashboard() {
 
   useEffect(() => {
     actions.loadTodaysMenu();
-    if (state.user) {
+    if (user) {
       // Load user's current order
       const userOrder = state.orders.find(
         (order) =>
-          order.customerId === state.user?.id && order.status !== "delivered",
+          order.customerId === user?.id && order.status !== "delivered",
       );
       setCurrentOrder(userOrder);
       if (userOrder) {
         setSelectedMeal(userOrder.mealId);
       }
     }
-  }, [state.user]);
+  }, [user]);
 
   const handleOrderMeal = async (meal) => {
     setSelectedMealForPayment(meal);
@@ -77,7 +80,7 @@ export default function Dashboard() {
     });
   };
 
-  if (!state.user) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
@@ -109,7 +112,7 @@ export default function Dashboard() {
         >
           <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-orange-100/50">
             <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Welcome, {state.user.name}!
+              Welcome, {user?.fullName || user?.name || "User"}!
             </h1>
             <div className="flex items-center justify-center space-x-3 text-orange-600 mb-4">
               <Calendar className="w-6 h-6" />
@@ -155,7 +158,7 @@ export default function Dashboard() {
                     </div>
                     <div className="text-right">
                       <p className="text-3xl font-bold text-green-600 mb-2">
-                        ${currentOrder.price}
+                        {currentOrder.price}
                       </p>
                       <Button
                         variant="outline"
@@ -281,7 +284,7 @@ export default function Dashboard() {
 
                       <div className="flex items-center justify-between pt-2">
                         <div className="text-3xl font-bold text-orange-600">
-                          ${meal.price}
+                          {meal.price}
                         </div>
                       </div>
 
@@ -340,7 +343,7 @@ export default function Dashboard() {
 
           <div className="space-y-4">
             {state.orders
-              .filter((order) => order.customerId === state.user?.id)
+              .filter((order) => order.customerId === user?.id)
               .slice(0, 5)
               .map((order) => (
                 <Card
@@ -373,7 +376,7 @@ export default function Dashboard() {
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-bold text-gray-900 mb-1">
-                          ${order.price}
+                          {order.price}
                         </p>
                         <Badge
                           className={
@@ -393,7 +396,7 @@ export default function Dashboard() {
                 </Card>
               ))}
 
-            {state.orders.filter((order) => order.customerId === state.user?.id)
+            {state.orders.filter((order) => order.customerId === user?.id)
               .length === 0 && (
               <div className="text-center py-12">
                 <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />

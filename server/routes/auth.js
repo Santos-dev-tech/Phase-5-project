@@ -31,6 +31,15 @@ const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
+// Check if database is configured
+const isDatabaseConfigured = () => {
+  return (
+    process.env.DB_PASSWORD !== "[YOUR-PASSWORD]" &&
+    process.env.DB_PASSWORD &&
+    process.env.DB_PASSWORD !== "postgres"
+  );
+};
+
 // Register endpoint
 router.post("/register", authLimiter, async (req, res) => {
   try {
@@ -38,6 +47,36 @@ router.post("/register", authLimiter, async (req, res) => {
     const validatedData = registerSchema.parse(req.body);
     const { email, password, fullName, phone, role } = validatedData;
 
+    // Demo mode when database is not configured
+    if (!isDatabaseConfigured()) {
+      console.log("🔄 Demo mode: Registration without database");
+
+      // Generate demo user
+      const demoUser = {
+        id: Math.floor(Math.random() * 1000),
+        email,
+        full_name: fullName,
+        role,
+        caterer_id: role === "caterer" ? Math.floor(Math.random() * 100) : null,
+      };
+
+      // Generate JWT token
+      const token = generateToken(demoUser);
+
+      return res.status(201).json({
+        message: "User registered successfully (Demo Mode)",
+        user: {
+          id: demoUser.id,
+          email: demoUser.email,
+          fullName: demoUser.full_name,
+          role: demoUser.role,
+          catererId: demoUser.caterer_id,
+        },
+        token,
+      });
+    }
+
+    // Normal database mode
     // Check if user already exists
     const existingUser = await query("SELECT id FROM users WHERE email = $1", [
       email,
@@ -111,6 +150,38 @@ router.post("/login", authLimiter, async (req, res) => {
     const validatedData = loginSchema.parse(req.body);
     const { email, password } = validatedData;
 
+    // Demo mode when database is not configured
+    if (!isDatabaseConfigured()) {
+      console.log("🔄 Demo mode: Login without database");
+
+      // Accept any email/password combination in demo mode
+      const demoUser = {
+        id: Math.floor(Math.random() * 1000),
+        email,
+        full_name: email.split("@")[0] || "Demo User",
+        role: email.includes("admin") ? "admin" : "customer",
+        caterer_id: email.includes("caterer")
+          ? Math.floor(Math.random() * 100)
+          : null,
+      };
+
+      // Generate JWT token
+      const token = generateToken(demoUser);
+
+      return res.json({
+        message: "Login successful (Demo Mode)",
+        user: {
+          id: demoUser.id,
+          email: demoUser.email,
+          fullName: demoUser.full_name,
+          role: demoUser.role,
+          catererId: demoUser.caterer_id,
+        },
+        token,
+      });
+    }
+
+    // Normal database mode
     // Find user
     const userResult = await query(
       "SELECT id, email, password_hash, full_name, role, caterer_id FROM users WHERE email = $1",
@@ -171,11 +242,33 @@ router.post("/login", authLimiter, async (req, res) => {
 // Get current user profile
 router.get("/profile", authenticateToken, async (req, res) => {
   try {
+    // Demo mode when database is not configured
+    if (!isDatabaseConfigured()) {
+      console.log("🔄 Demo mode: Profile fetch without database");
+
+      // Return user data from JWT token
+      const user = req.user;
+
+      return res.json({
+        user: {
+          id: user.id,
+          email: user.email,
+          fullName: user.full_name || user.fullName,
+          phone: user.phone || null,
+          role: user.role,
+          catererId: user.caterer_id,
+          catererName: user.caterer_id ? "Demo Kitchen" : null,
+          createdAt: new Date().toISOString(),
+        },
+      });
+    }
+
+    // Normal database mode
     const userResult = await query(
       `SELECT u.id, u.email, u.full_name, u.phone, u.role, u.caterer_id, u.created_at,
               c.name as caterer_name
-       FROM users u 
-       LEFT JOIN caterers c ON u.caterer_id = c.id 
+       FROM users u
+       LEFT JOIN caterers c ON u.caterer_id = c.id
        WHERE u.id = $1`,
       [req.user.id],
     );
