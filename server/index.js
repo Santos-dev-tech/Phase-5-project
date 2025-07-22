@@ -34,6 +34,9 @@ dotenv.config();
 export function createServer() {
   const app = express();
 
+  // Trust proxy for rate limiting to work correctly
+  app.set("trust proxy", 1);
+
   // Initialize database on startup
   initializeDatabase();
 
@@ -69,6 +72,9 @@ export function createServer() {
 
   // NEW MEAL MANAGEMENT ROUTES
   app.use("/api/meals", mealsRoutes);
+
+  // General meals endpoint for frontend compatibility
+  app.get("/api/meals", getMealOptions);
 
   // LEGACY Mealy API routes (keep for backward compatibility)
   // Authentication (legacy)
