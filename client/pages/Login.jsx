@@ -46,7 +46,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.email || !formData.password) {
+    if (!formData.email.trim() || !formData.password.trim()) {
       toast.error("Please fill in all fields");
       return;
     }
