@@ -148,6 +148,36 @@ router.post("/login", authLimiter, async (req, res) => {
     const validatedData = loginSchema.parse(req.body);
     const { email, password } = validatedData;
 
+    // Demo mode when database is not configured
+    if (!isDatabaseConfigured()) {
+      console.log("🔄 Demo mode: Login without database");
+
+      // Accept any email/password combination in demo mode
+      const demoUser = {
+        id: Math.floor(Math.random() * 1000),
+        email,
+        full_name: email.split('@')[0] || 'Demo User',
+        role: email.includes('admin') ? 'admin' : 'customer',
+        caterer_id: email.includes('caterer') ? Math.floor(Math.random() * 100) : null,
+      };
+
+      // Generate JWT token
+      const token = generateToken(demoUser);
+
+      return res.json({
+        message: "Login successful (Demo Mode)",
+        user: {
+          id: demoUser.id,
+          email: demoUser.email,
+          fullName: demoUser.full_name,
+          role: demoUser.role,
+          catererId: demoUser.caterer_id,
+        },
+        token,
+      });
+    }
+
+    // Normal database mode
     // Find user
     const userResult = await query(
       "SELECT id, email, password_hash, full_name, role, caterer_id FROM users WHERE email = $1",
