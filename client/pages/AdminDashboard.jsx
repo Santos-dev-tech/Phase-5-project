@@ -99,7 +99,7 @@ export default function AdminDashboard() {
   ).length;
   const avgOrderValue = totalOrders > 0 ? state.totalRevenue / totalOrders : 0;
 
-  if (!state.user || state.user.role !== "admin") {
+  if (!user || user.role !== "admin") {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
