@@ -131,10 +131,10 @@ export default function Layout({ children }) {
                           </div>
                           <div className="flex flex-col space-y-1 leading-none">
                             <p className="font-semibold text-gray-900">
-                              {state.user.name}
+                              {user.fullName || user.name}
                             </p>
                             <p className="text-sm text-gray-600 capitalize">
-                              {state.user.role === "admin"
+                              {user.role === "admin"
                                 ? "Restaurant Manager"
                                 : "Valued Customer"}
                             </p>
