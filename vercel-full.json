@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/spa",
+  "installCommand": "npm install",
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/((?!api).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "env": {
+    "MPESA_CONSUMER_KEY": "@mpesa_consumer_key",
+    "MPESA_CONSUMER_SECRET": "@mpesa_consumer_secret", 
+    "MPESA_ENVIRONMENT": "sandbox",
+    "MPESA_SHORT_CODE": "174379",
+    "MPESA_PASSKEY": "@mpesa_passkey",
+    "MPESA_BUSINESS_PHONE": "254746013145",
+    "JWT_SECRET": "@jwt_secret"
+  }
+}
