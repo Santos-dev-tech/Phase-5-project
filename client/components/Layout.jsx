@@ -91,10 +91,10 @@ export default function Layout({ children }) {
 
               {/* User Menu */}
               <div className="flex items-center space-x-4">
-                {state.user ? (
+                {user ? (
                   <div className="flex items-center space-x-3">
                     {/* Notifications for Admin */}
-                    {state.user.role === "admin" && (
+                    {user.role === "admin" && (
                       <div className="relative">
                         <Button
                           variant="ghost"
