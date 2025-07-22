@@ -131,7 +131,7 @@ export default function AdminDashboard() {
               Restaurant Management
             </h1>
             <p className="text-gray-600 text-lg">
-              Welcome back, {user?.fullName || user?.name || 'Admin'}
+              Welcome back, {user?.fullName || user?.name || "Admin"}
             </p>
           </div>
         </motion.div>

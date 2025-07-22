@@ -33,9 +33,11 @@ const loginSchema = z.object({
 
 // Check if database is configured
 const isDatabaseConfigured = () => {
-  return process.env.DB_PASSWORD !== '[YOUR-PASSWORD]' &&
-         process.env.DB_PASSWORD &&
-         process.env.DB_PASSWORD !== 'postgres';
+  return (
+    process.env.DB_PASSWORD !== "[YOUR-PASSWORD]" &&
+    process.env.DB_PASSWORD &&
+    process.env.DB_PASSWORD !== "postgres"
+  );
 };
 
 // Register endpoint
@@ -156,9 +158,11 @@ router.post("/login", authLimiter, async (req, res) => {
       const demoUser = {
         id: Math.floor(Math.random() * 1000),
         email,
-        full_name: email.split('@')[0] || 'Demo User',
-        role: email.includes('admin') ? 'admin' : 'customer',
-        caterer_id: email.includes('caterer') ? Math.floor(Math.random() * 100) : null,
+        full_name: email.split("@")[0] || "Demo User",
+        role: email.includes("admin") ? "admin" : "customer",
+        caterer_id: email.includes("caterer")
+          ? Math.floor(Math.random() * 100)
+          : null,
       };
 
       // Generate JWT token
