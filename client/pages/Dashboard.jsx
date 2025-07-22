@@ -30,18 +30,18 @@ export default function Dashboard() {
 
   useEffect(() => {
     actions.loadTodaysMenu();
-    if (state.user) {
+    if (user) {
       // Load user's current order
       const userOrder = state.orders.find(
         (order) =>
-          order.customerId === state.user?.id && order.status !== "delivered",
+          order.customerId === user?.id && order.status !== "delivered",
       );
       setCurrentOrder(userOrder);
       if (userOrder) {
         setSelectedMeal(userOrder.mealId);
       }
     }
-  }, [state.user]);
+  }, [user]);
 
   const handleOrderMeal = async (meal) => {
     setSelectedMealForPayment(meal);
