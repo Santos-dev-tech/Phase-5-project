@@ -3,13 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChefHat, Eye, EyeOff } from "lucide-react";
+import { ChefHat, Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useApp } from "@/contexts/AppContext";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser, selectAuth, clearError } from "@/store/slices/authSlice";
+import { toast } from "sonner";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { state, actions } = useApp();
+  const dispatch = useDispatch();
+  const { isAuthenticated, isLoading, error, user } = useSelector(selectAuth);
+
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -17,14 +21,45 @@ export default function Login() {
   });
 
   useEffect(() => {
-    if (state.user) {
-      navigate(state.user.role === "admin" ? "/admin" : "/dashboard");
+    // Clear any existing errors when component mounts
+    dispatch(clearError());
+  }, [dispatch]);
+
+  useEffect(() => {
+    // Redirect if already authenticated
+    if (isAuthenticated && user) {
+      const redirectPath =
+        user.role === "admin" || user.role === "caterer"
+          ? "/admin"
+          : "/dashboard";
+      navigate(redirectPath, { replace: true });
     }
-  }, [state.user, navigate]);
+  }, [isAuthenticated, user, navigate]);
+
+  useEffect(() => {
+    // Show error toast if login fails
+    if (error) {
+      toast.error(error.message || "Login failed");
+    }
+  }, [error]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await actions.login(formData.email, formData.password);
+
+    if (!formData.email || !formData.password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    try {
+      const result = await dispatch(loginUser(formData));
+
+      if (loginUser.fulfilled.match(result)) {
+        toast.success("Login successful! Welcome back.");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+    }
   };
 
   const handleChange = (e) => {
@@ -48,34 +83,30 @@ export default function Login() {
       </div>
 
       <div className="relative z-10 w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center space-x-3">
-            <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-4 rounded-2xl shadow-xl">
-              <ChefHat className="h-10 w-10 text-white" />
+        <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur-md">
+          <CardHeader className="text-center space-y-6 pb-8">
+            <div className="flex justify-center">
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 w-16 h-16 rounded-full flex items-center justify-center shadow-lg">
+                <ChefHat className="w-8 h-8 text-white" />
+              </div>
             </div>
-            <div>
-              <span className="text-4xl font-bold text-white drop-shadow-lg">
-                Mealy
-              </span>
-              <p className="text-orange-200 text-sm -mt-1">Fine Dining</p>
+            <div className="space-y-2">
+              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">
+                Welcome Back
+              </CardTitle>
+              <p className="text-gray-600 text-lg">
+                Sign in to your Mealy account
+              </p>
             </div>
-          </Link>
-        </div>
-
-        <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur-xl">
-          <CardHeader className="space-y-1 text-center pb-6">
-            <CardTitle className="text-3xl font-bold text-gray-900">
-              Welcome Back
-            </CardTitle>
-            <p className="text-gray-600 text-lg">
-              Sign in to your culinary journey
-            </p>
           </CardHeader>
-          <CardContent className="space-y-6 p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
+
+          <CardContent className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700 font-semibold">
+                <Label
+                  htmlFor="email"
+                  className="text-sm font-semibold text-gray-700"
+                >
                   Email Address
                 </Label>
                 <Input
@@ -83,16 +114,18 @@ export default function Login() {
                   name="email"
                   type="email"
                   placeholder="Enter your email"
-                  required
                   value={formData.email}
                   onChange={handleChange}
-                  className="h-12 text-lg border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                  required
+                  className="h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500"
+                  disabled={isLoading}
                 />
               </div>
+
               <div className="space-y-2">
                 <Label
                   htmlFor="password"
-                  className="text-gray-700 font-semibold"
+                  className="text-sm font-semibold text-gray-700"
                 >
                   Password
                 </Label>
@@ -102,86 +135,71 @@ export default function Login() {
                     name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    required
                     value={formData.password}
                     onChange={handleChange}
-                    className="h-12 text-lg pr-12 border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                    required
+                    className="h-12 pr-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500"
+                    disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-orange-600 transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                    disabled={isLoading}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-gray-400" />
+                      <EyeOff className="w-5 h-5" />
                     ) : (
-                      <Eye className="h-5 w-5 text-gray-400" />
+                      <Eye className="w-5 h-5" />
                     )}
                   </button>
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <Link
-                  to="#"
-                  className="text-sm text-orange-600 hover:text-orange-500 font-medium"
-                >
-                  Forgot password?
-                </Link>
-              </div>
+
+              {error && (
+                <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-sm">
+                    {error.message || "Login failed"}
+                  </span>
+                </div>
+              )}
+
               <Button
                 type="submit"
-                disabled={state.loading}
-                className="w-full h-14 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
+                className="w-full h-12 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                disabled={isLoading}
               >
-                {state.loading ? "Signing In..." : "Sign In"}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Signing In...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
               </Button>
             </form>
 
             <div className="text-center">
               <p className="text-gray-600">
-                New to our restaurant?{" "}
+                Don't have an account?{" "}
                 <Link
                   to="/register"
-                  className="text-orange-600 hover:text-orange-500 font-semibold"
+                  className="text-orange-600 hover:text-orange-700 font-semibold transition-colors"
                 >
-                  Join us today
+                  Create Account
                 </Link>
               </p>
             </div>
 
-            {/* Demo accounts */}
-            <div className="border-t border-gray-200 pt-6">
-              <p className="text-center text-sm text-gray-500 mb-4 font-medium">
-                Demo Accounts
-              </p>
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setFormData({
-                      email: "customer@demo.com",
-                      password: "demo123",
-                    });
-                  }}
-                  className="border-orange-200 text-orange-700 hover:bg-orange-50"
-                >
-                  👨‍💼 Customer
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setFormData({
-                      email: "admin@demo.com",
-                      password: "demo123",
-                    });
-                  }}
-                  className="border-orange-200 text-orange-700 hover:bg-orange-50"
-                >
-                  👨‍🍳 Chef/Admin
-                </Button>
-              </div>
+            <div className="text-center pt-4 border-t border-gray-200">
+              <Link
+                to="/"
+                className="text-gray-500 hover:text-gray-700 transition-colors inline-flex items-center"
+              >
+                ← Back to Home
+              </Link>
             </div>
           </CardContent>
         </Card>
