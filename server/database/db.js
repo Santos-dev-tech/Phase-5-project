@@ -31,6 +31,12 @@ pool.on("error", (err) => {
 
 // Helper function to execute queries
 export const query = async (text, params) => {
+  // Skip query if database is not configured
+  if (process.env.DB_PASSWORD === '[YOUR-PASSWORD]' || !process.env.DB_PASSWORD || process.env.DB_PASSWORD === 'postgres') {
+    console.log("⚠️  Database not configured - skipping query");
+    return { rows: [] };
+  }
+
   const start = Date.now();
   try {
     const res = await pool.query(text, params);
