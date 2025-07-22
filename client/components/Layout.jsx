@@ -16,9 +16,11 @@ import { selectUser, logoutUser } from "@/store/slices/authSlice";
 export default function Layout({ children }) {
   const navigate = useNavigate();
   const { state, actions } = useApp();
+  const user = useSelector(selectUser);
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
-    actions.logout();
+    dispatch(logoutUser());
     navigate("/");
   };
 
