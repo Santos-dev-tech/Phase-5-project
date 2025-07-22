@@ -80,7 +80,7 @@ export default function Dashboard() {
     });
   };
 
-  if (!state.user) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
