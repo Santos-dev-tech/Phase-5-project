@@ -238,11 +238,33 @@ router.post("/login", authLimiter, async (req, res) => {
 // Get current user profile
 router.get("/profile", authenticateToken, async (req, res) => {
   try {
+    // Demo mode when database is not configured
+    if (!isDatabaseConfigured()) {
+      console.log("🔄 Demo mode: Profile fetch without database");
+
+      // Return user data from JWT token
+      const user = req.user;
+
+      return res.json({
+        user: {
+          id: user.id,
+          email: user.email,
+          fullName: user.full_name || user.fullName,
+          phone: user.phone || null,
+          role: user.role,
+          catererId: user.caterer_id,
+          catererName: user.caterer_id ? "Demo Kitchen" : null,
+          createdAt: new Date().toISOString(),
+        },
+      });
+    }
+
+    // Normal database mode
     const userResult = await query(
       `SELECT u.id, u.email, u.full_name, u.phone, u.role, u.caterer_id, u.created_at,
               c.name as caterer_name
-       FROM users u 
-       LEFT JOIN caterers c ON u.caterer_id = c.id 
+       FROM users u
+       LEFT JOIN caterers c ON u.caterer_id = c.id
        WHERE u.id = $1`,
       [req.user.id],
     );
