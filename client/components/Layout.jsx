@@ -64,15 +64,15 @@ export default function Layout({ children }) {
                 >
                   Home
                 </Link>
-                {state.user && (
+                {user && (
                   <>
                     <Link
                       to="/dashboard"
                       className="text-gray-700 hover:text-orange-600 font-semibold transition-all duration-300 hover:scale-105"
                     >
-                      {state.user.role === "admin" ? "Orders" : "Dashboard"}
+                      {user.role === "admin" ? "Orders" : "Dashboard"}
                     </Link>
-                    {state.user.role === "admin" && (
+                    {user.role === "admin" && (
                       <Link
                         to="/admin"
                         className="text-gray-700 hover:text-orange-600 font-semibold transition-all duration-300 hover:scale-105 relative"
