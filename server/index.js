@@ -34,6 +34,9 @@ dotenv.config();
 export function createServer() {
   const app = express();
 
+  // Trust proxy for rate limiting to work correctly
+  app.set('trust proxy', 1);
+
   // Initialize database on startup
   initializeDatabase();
 
