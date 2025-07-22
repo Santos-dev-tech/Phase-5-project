@@ -21,6 +21,7 @@ import MpesaPayment from "@/components/MpesaPayment";
 
 export default function Dashboard() {
   const { state, actions } = useApp();
+  const user = useSelector(selectUser);
   const [selectedMeal, setSelectedMeal] = useState(null);
   const [currentOrder, setCurrentOrder] = useState(null);
   const [likedMeals, setLikedMeals] = useState(new Set());
