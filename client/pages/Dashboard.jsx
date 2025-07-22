@@ -155,7 +155,7 @@ export default function Dashboard() {
                     </div>
                     <div className="text-right">
                       <p className="text-3xl font-bold text-green-600 mb-2">
-                        ${currentOrder.price}
+                        {currentOrder.price}
                       </p>
                       <Button
                         variant="outline"
@@ -281,7 +281,7 @@ export default function Dashboard() {
 
                       <div className="flex items-center justify-between pt-2">
                         <div className="text-3xl font-bold text-orange-600">
-                          ${meal.price}
+                          {meal.price}
                         </div>
                       </div>
 
@@ -373,7 +373,7 @@ export default function Dashboard() {
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-bold text-gray-900 mb-1">
-                          ${order.price}
+                          {order.price}
                         </p>
                         <Badge
                           className={
