@@ -100,27 +100,32 @@ client/                              # Frontend source code
 ## 🔧 Key Technologies
 
 ### Core Framework
+
 - **React** 18.3.1 - Modern React with hooks
 - **React Router DOM** 6.26.2 - Client-side routing
 - **Vite** 6.2.2 - Fast build tool and dev server
 
 ### State Management
+
 - **Redux Toolkit** 2.0.1 - Predictable state container
 - **React Redux** 9.0.4 - React bindings for Redux
 - **TanStack Query** 5.56.2 - Server state management
 
 ### UI Components
+
 - **Radix UI** - Unstyled, accessible components
 - **Tailwind CSS** 3.4.11 - Utility-first CSS framework
 - **Lucide React** 0.462.0 - Beautiful icon library
 - **Framer Motion** 12.6.2 - Animation library
 
 ### Form Handling
+
 - **React Hook Form** 7.53.0 - Performant forms
 - **Hookform Resolvers** 3.9.0 - Validation resolvers
 - **Zod** 3.23.8 - TypeScript-first schema validation
 
 ### Additional Features
+
 - **Firebase** 11.10.0 - Authentication and real-time data
 - **Next Themes** 0.3.0 - Dark/light theme support
 - **Sonner** 1.5.0 - Toast notifications
@@ -129,12 +134,14 @@ client/                              # Frontend source code
 ## 🎨 Styling System
 
 ### CSS Architecture
+
 - **Tailwind CSS** for utility-first styling
 - **CSS Custom Properties** for theme variables
 - **HSL Color System** for consistent theming
 - **Dark/Light Mode** support with CSS variables
 
 ### Design Tokens
+
 - **Brand Colors**: Orange and Green palette
 - **Semantic Colors**: Primary, secondary, accent, destructive
 - **Layout**: Consistent spacing and sizing scales
@@ -143,6 +150,7 @@ client/                              # Frontend source code
 ## 🔄 State Management Architecture
 
 ### Redux Store Structure
+
 ```javascript
 store: {
   auth: {
@@ -175,6 +183,7 @@ store: {
 ```
 
 ### Context Providers
+
 - **AppContext**: Global app state and functions
 - **Theme Context**: Dark/light mode management
 - **Toast Context**: Notification management
@@ -182,6 +191,7 @@ store: {
 ## 🛣️ Routing Structure
 
 ### Page Routes
+
 ```javascript
 const routes = [
   { path: "/", component: Index },
@@ -189,11 +199,12 @@ const routes = [
   { path: "/register", component: Register },
   { path: "/dashboard", component: Dashboard, protected: true },
   { path: "/admin", component: AdminDashboard, protected: true, role: "admin" },
-  { path: "*", component: NotFound }
-]
+  { path: "*", component: NotFound },
+];
 ```
 
 ### Protected Routes
+
 - **Authentication Required**: Dashboard, Admin
 - **Role-based Access**: Admin routes restricted to admin users
 - **Redirect Logic**: Unauthenticated users redirected to login
@@ -201,12 +212,14 @@ const routes = [
 ## 🔧 Build Configuration
 
 ### Vite Configuration
+
 - **SWC Plugin**: Fast React compilation
 - **Path Aliases**: `@/` for src directory
 - **Proxy Setup**: API calls proxied to backend
 - **Development Server**: Hot reload on port 3001
 
 ### Build Output
+
 ```
 dist/spa/
 ├── index.html
@@ -219,12 +232,15 @@ dist/spa/
 ## 🧩 Component Architecture
 
 ### Component Categories
+
 1. **UI Components** (`components/ui/`)
+
    - Atomic, reusable components
    - Based on Radix UI primitives
    - Styled with Tailwind CSS variants
 
 2. **Feature Components** (`components/`)
+
    - Business logic components
    - Composed of UI components
    - Connected to state management
@@ -235,6 +251,7 @@ dist/spa/
    - Data fetching and state management
 
 ### Design Patterns
+
 - **Compound Components**: For complex UI patterns
 - **Render Props**: For reusable logic sharing
 - **Custom Hooks**: For stateful logic extraction
@@ -243,6 +260,7 @@ dist/spa/
 ## 🔐 Security Implementation
 
 ### Frontend Security
+
 - **Input Sanitization**: XSS prevention
 - **Token Storage**: Secure JWT handling
 - **Route Protection**: Authentication guards
@@ -250,6 +268,7 @@ dist/spa/
 - **CORS**: Cross-origin request handling
 
 ### Firebase Integration
+
 - **Authentication**: Google, email/password
 - **Firestore**: Real-time database
 - **Security Rules**: Access control
@@ -258,12 +277,14 @@ dist/spa/
 ## 📱 Responsive Design
 
 ### Breakpoint System
+
 - **Mobile**: 0-768px
 - **Tablet**: 768-1024px
 - **Desktop**: 1024px+
 - **Large Desktop**: 1400px+
 
 ### Mobile-First Approach
+
 - Progressive enhancement
 - Touch-friendly interactions
 - Optimized performance
@@ -272,18 +293,21 @@ dist/spa/
 ## 🎯 Performance Optimizations
 
 ### Code Splitting
+
 - Route-based splitting
 - Component lazy loading
 - Dynamic imports
 - Bundle size optimization
 
 ### Caching Strategy
+
 - Browser caching
 - Service worker caching
 - API response caching
 - Static asset caching
 
 ### Bundle Analysis
+
 - Chunk size warnings
 - Tree shaking
 - Dead code elimination
@@ -292,6 +316,7 @@ dist/spa/
 ## 🧪 Development Workflow
 
 ### Local Development
+
 ```bash
 npm run dev          # Start development server
 npm run build        # Build for production
@@ -301,6 +326,7 @@ npm run format       # Format code
 ```
 
 ### Environment Setup
+
 - `.env.example` - Environment template
 - `.env.local` - Local development variables
 - Hot module replacement
@@ -309,12 +335,14 @@ npm run format       # Format code
 ## 📚 Documentation Standards
 
 ### Component Documentation
+
 - Props interface
 - Usage examples
 - Styling variants
 - Accessibility notes
 
 ### Code Comments
+
 - Complex logic explanation
 - API integration notes
 - Performance considerations

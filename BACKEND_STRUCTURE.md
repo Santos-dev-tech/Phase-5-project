@@ -57,39 +57,41 @@ netlify/functions/                  # Netlify serverless functions
 ## 📦 Node.js Backend Structure
 
 ### Core Dependencies
+
 ```json
 {
   "dependencies": {
-    "express": "^4.18.2",           // Web framework
-    "cors": "^2.8.5",               // Cross-origin resource sharing
-    "dotenv": "^16.3.1",            // Environment variables
-    "pg": "^8.11.3",                // PostgreSQL client
-    "jsonwebtoken": "^9.0.2",       // JWT authentication
-    "bcryptjs": "^2.4.3",           // Password hashing
-    "zod": "^3.23.8",               // Schema validation
+    "express": "^4.18.2", // Web framework
+    "cors": "^2.8.5", // Cross-origin resource sharing
+    "dotenv": "^16.3.1", // Environment variables
+    "pg": "^8.11.3", // PostgreSQL client
+    "jsonwebtoken": "^9.0.2", // JWT authentication
+    "bcryptjs": "^2.4.3", // Password hashing
+    "zod": "^3.23.8", // Schema validation
     "express-rate-limit": "^7.1.5", // Rate limiting
-    "firebase": "^11.10.0"          // Firebase integration
+    "firebase": "^11.10.0" // Firebase integration
   }
 }
 ```
 
 ### Server Configuration (`server/index.js`)
+
 ```javascript
 // Express app factory
 export function createServer() {
   const app = express();
-  
+
   // Middleware stack
   app.use(cors());
   app.use(express.json());
   app.use(rateLimit());
-  
+
   // Route handlers
-  app.use('/api/auth', authRoutes);
-  app.use('/api/meals', mealsRoutes);
-  app.use('/api/orders', orderRoutes);
-  app.use('/api/payments', paymentRoutes);
-  
+  app.use("/api/auth", authRoutes);
+  app.use("/api/meals", mealsRoutes);
+  app.use("/api/orders", orderRoutes);
+  app.use("/api/payments", paymentRoutes);
+
   return app;
 }
 ```
@@ -97,6 +99,7 @@ export function createServer() {
 ## 🗄️ Database Architecture
 
 ### PostgreSQL Schema
+
 ```sql
 -- Core tables
 users              # User authentication and profiles
@@ -113,6 +116,7 @@ order_meals        # Many-to-many: orders ↔ meals
 ```
 
 ### Database Connection (`server/database/db.js`)
+
 ```javascript
 // PostgreSQL connection setup
 const pool = new Pool({
@@ -120,7 +124,7 @@ const pool = new Pool({
   port: process.env.DB_PORT,
   database: process.env.DB_NAME,
   user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD
+  password: process.env.DB_PASSWORD,
 });
 
 export { pool };
@@ -129,16 +133,18 @@ export { pool };
 ## 🛣️ API Route Structure
 
 ### Authentication Routes (`server/routes/auth.js`)
+
 ```javascript
-POST   /api/auth/register      // User registration
-POST   /api/auth/login         // User login
-POST   /api/auth/refresh       // Token refresh
-POST   /api/auth/logout        // User logout
-GET    /api/auth/profile       // Get user profile
-PUT    /api/auth/profile       // Update user profile
+POST / api / auth / register; // User registration
+POST / api / auth / login; // User login
+POST / api / auth / refresh; // Token refresh
+POST / api / auth / logout; // User logout
+GET / api / auth / profile; // Get user profile
+PUT / api / auth / profile; // Update user profile
 ```
 
 ### Meal Management Routes (`server/routes/meals.js`)
+
 ```javascript
 GET    /api/meals              // Get all meals
 POST   /api/meals              // Create new meal
@@ -148,6 +154,7 @@ DELETE /api/meals/:id          // Delete meal
 ```
 
 ### Order Routes (`server/routes/orders.js`)
+
 ```javascript
 POST   /api/orders             // Place new order
 GET    /api/orders             // Get user orders
@@ -157,6 +164,7 @@ DELETE /api/orders/:id         // Cancel order
 ```
 
 ### Payment Routes (`server/routes/payments.js`)
+
 ```javascript
 POST   /api/payments/mpesa/initiate     // Initiate M-Pesa payment
 GET    /api/payments/mpesa/status/:id   // Check payment status
@@ -168,25 +176,27 @@ GET    /api/payments/transactions       // Get payment history
 ## 🔐 Authentication & Security
 
 ### JWT Middleware (`server/middleware/auth.js`)
+
 ```javascript
 export const authenticateToken = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  
+  const token = req.headers.authorization?.split(" ")[1];
+
   if (!token) {
-    return res.status(401).json({ error: 'Access denied' });
+    return res.status(401).json({ error: "Access denied" });
   }
-  
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(403).json({ error: 'Invalid token' });
+    res.status(403).json({ error: "Invalid token" });
   }
 };
 ```
 
 ### Security Features
+
 - **JWT Authentication**: Stateless token-based auth
 - **Password Hashing**: bcrypt with salt rounds
 - **Rate Limiting**: Prevent brute force attacks
@@ -197,6 +207,7 @@ export const authenticateToken = (req, res, next) => {
 ## 💳 Payment Integration
 
 ### M-Pesa Service (`server/services/mpesa.js`)
+
 ```javascript
 class MpesaService {
   constructor() {
@@ -204,11 +215,11 @@ class MpesaService {
     this.businessShortCode = process.env.MPESA_BUSINESS_SHORT_CODE;
     this.passKey = process.env.MPESA_PASS_KEY;
   }
-  
+
   async initiatePayment(amount, phoneNumber, accountReference) {
     // STK Push implementation
   }
-  
+
   async checkPaymentStatus(checkoutRequestId) {
     // Payment status check
   }
@@ -216,6 +227,7 @@ class MpesaService {
 ```
 
 ### Payment Flow
+
 1. **Initiate Payment**: STK Push to customer phone
 2. **Customer Authorization**: Customer enters M-Pesa PIN
 3. **Callback Processing**: M-Pesa sends payment result
@@ -225,6 +237,7 @@ class MpesaService {
 ## 🐍 Python Django Backend
 
 ### Django Project Structure (`backend/`)
+
 ```python
 # Settings configuration
 DATABASES = {
@@ -250,6 +263,7 @@ REST_FRAMEWORK = {
 ```
 
 ### Django Models (`backend/restaurant/models.py`)
+
 ```python
 class Restaurant(models.Model):
     name = models.CharField(max_length=200)
@@ -270,11 +284,13 @@ class MenuItem(models.Model):
 ## ☁️ Serverless Functions
 
 ### Netlify Functions (`netlify/functions/api.js`)
+
 ```javascript
 exports.handler = serverless(app);
 ```
 
 ### Vercel Functions (`api/`)
+
 - Dynamic route handling
 - Edge runtime support
 - Auto-scaling capabilities
@@ -283,6 +299,7 @@ exports.handler = serverless(app);
 ## 🔧 Configuration Files
 
 ### Environment Variables (`.env.example`)
+
 ```env
 # Server Configuration
 NODE_ENV=development
@@ -317,44 +334,51 @@ FRONTEND_URL=http://localhost:8080
 ### Build Configuration
 
 #### Vite Server Config (`vite.config.server.js`)
+
 ```javascript
 export default defineConfig({
   build: {
     ssr: true,
-    target: 'node18',
-    outDir: 'dist/server',
+    target: "node18",
+    outDir: "dist/server",
     rollupOptions: {
-      input: 'server/node-build.js',
+      input: "server/node-build.js",
       output: {
-        format: 'es',
-        entryFileNames: 'node-build.mjs'
-      }
-    }
-  }
+        format: "es",
+        entryFileNames: "node-build.mjs",
+      },
+    },
+  },
 });
 ```
 
 ## 📊 API Documentation
 
 ### Health Check Endpoints
+
 ```javascript
-GET    /api/health             // Server health status
-GET    /api/ping               // Simple ping response
+GET / api / health; // Server health status
+GET / api / ping; // Simple ping response
 ```
 
 ### Error Handling
+
 ```javascript
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error('Server error:', err);
+  console.error("Server error:", err);
   res.status(500).json({
-    error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+    error: "Internal server error",
+    message:
+      process.env.NODE_ENV === "development"
+        ? err.message
+        : "Something went wrong",
   });
 });
 ```
 
 ### Response Format
+
 ```json
 {
   "success": true,
@@ -367,6 +391,7 @@ app.use((err, req, res, next) => {
 ## 🔄 Deployment Architecture
 
 ### Production Build
+
 ```bash
 npm run build                  # Build client and server
 npm run build:client          # Build frontend SPA
@@ -375,20 +400,22 @@ npm start                     # Start production server
 ```
 
 ### Deployment Targets
+
 - **Vercel**: Full-stack deployment with serverless functions
 - **Netlify**: JAMstack deployment with edge functions
 - **Traditional VPS**: PM2 + Nginx setup
 - **Docker**: Containerized deployment
 
 ### Static File Serving
+
 ```javascript
 // Serve built SPA files
-app.use(express.static(path.join(__dirname, '../spa')));
+app.use(express.static(path.join(__dirname, "../spa")));
 
 // Handle React Router
-app.get('*', (req, res) => {
-  if (!req.path.startsWith('/api/')) {
-    res.sendFile(path.join(__dirname, '../spa/index.html'));
+app.get("*", (req, res) => {
+  if (!req.path.startsWith("/api/")) {
+    res.sendFile(path.join(__dirname, "../spa/index.html"));
   }
 });
 ```
@@ -396,26 +423,28 @@ app.get('*', (req, res) => {
 ## 🔍 Monitoring & Logging
 
 ### Request Logging
+
 ```javascript
 // Development logging
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
 }
 
 // Error tracking
 app.use((err, req, res, next) => {
-  console.error('Error:', {
+  console.error("Error:", {
     message: err.message,
     stack: err.stack,
     url: req.url,
     method: req.method,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
   next(err);
 });
 ```
 
 ### Performance Monitoring
+
 - Request timing
 - Database query performance
 - Memory usage tracking
@@ -424,21 +453,23 @@ app.use((err, req, res, next) => {
 ## 🧪 Testing Strategy
 
 ### API Testing
+
 ```javascript
 // Jest + Supertest
-describe('Auth API', () => {
-  test('POST /api/auth/login', async () => {
+describe("Auth API", () => {
+  test("POST /api/auth/login", async () => {
     const response = await request(app)
-      .post('/api/auth/login')
-      .send({ email: 'test@example.com', password: 'password' });
-    
+      .post("/api/auth/login")
+      .send({ email: "test@example.com", password: "password" });
+
     expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('token');
+    expect(response.body).toHaveProperty("token");
   });
 });
 ```
 
 ### Database Testing
+
 - Test database setup
 - Transaction rollback
 - Seed data management
@@ -447,18 +478,21 @@ describe('Auth API', () => {
 ## 🚀 Scalability Considerations
 
 ### Horizontal Scaling
+
 - Stateless server design
 - Load balancer ready
 - Database connection pooling
 - Session management
 
 ### Caching Strategy
+
 - Database query caching
 - API response caching
 - Static asset caching
 - CDN integration
 
 ### Performance Optimizations
+
 - Database indexing
 - Query optimization
 - Connection pooling
