@@ -112,7 +112,7 @@ export default function Dashboard() {
         >
           <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-orange-100/50">
             <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-              Welcome, {state.user.name}!
+              Welcome, {user?.fullName || user?.name || 'User'}!
             </h1>
             <div className="flex items-center justify-center space-x-3 text-orange-600 mb-4">
               <Calendar className="w-6 h-6" />
