@@ -15,9 +15,13 @@
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build",
     "build:server": "vite build --config vite.config.server.js",
+    "build:vercel": "npm run build",
+    "build:netlify": "npm run build",
     "start": "node dist/server/node-build.mjs",
     "test": "vitest --run",
-    "format.fix": "prettier --write ."
+    "format.fix": "prettier --write .",
+    "deploy:vercel": "vercel --prod",
+    "deploy:netlify": "netlify deploy --prod"
   },
   "dependencies": {
     "express": "^4.18.2",
