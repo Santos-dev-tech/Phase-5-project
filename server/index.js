@@ -73,6 +73,9 @@ export function createServer() {
   // NEW MEAL MANAGEMENT ROUTES
   app.use("/api/meals", mealsRoutes);
 
+  // General meals endpoint for frontend compatibility
+  app.get("/api/meals", getMealOptions);
+
   // LEGACY Mealy API routes (keep for backward compatibility)
   // Authentication (legacy)
   app.post("/api/legacy/auth/login", login);
