@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useApp } from "@/contexts/AppContext";
+import { useSelector, useDispatch } from "react-redux";
+import { selectUser, logoutUser } from "@/store/slices/authSlice";
 
 export default function Layout({ children }) {
   const navigate = useNavigate();
