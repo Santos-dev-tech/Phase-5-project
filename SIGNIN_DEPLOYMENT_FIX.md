@@ -20,12 +20,14 @@ The login form uses the custom backend (`/api/auth/login`), which doesn't exist 
 **For Vercel:**
 
 1. Replace `vercel.json` with `vercel-full.json`:
+
 ```bash
 mv vercel.json vercel-static.json  # backup current config
 mv vercel-full.json vercel.json   # use full-stack config
 ```
 
 2. Add environment variables in Vercel dashboard:
+
 ```
 MPESA_CONSUMER_KEY = F7id9AW94hl3BxC1aedkJaCy3I6HJmHAaUAfNQYzyOTaKzLJ
 MPESA_CONSUMER_SECRET = Dy4V6j1I6RpBBxc4qz0CBHfAA1q646ABBibnACMNiYJi4vqukNecNkwy1gVp7sLa
@@ -69,11 +71,13 @@ Keep both authentication methods but add fallback:
 ### For Current Deployment Issue:
 
 1. **Identify your deployment platform:**
+
    - Vercel: Use Option 1 (switch to full-stack config)
    - Netlify: Already supported, just add environment variables
    - Other: Consider Option 2 (Firebase only)
 
 2. **Set environment variables:**
+
    - Copy variables from VERCEL_DEPLOYMENT_GUIDE.md
    - Add JWT_SECRET for authentication
    - Set all for "All Environments"
@@ -88,10 +92,12 @@ Keep both authentication methods but add fallback:
 After deployment, test these scenarios:
 
 1. **Email/Password Sign-in:**
+
    - Should work with any email/password in demo mode
    - Check browser network tab for API calls
 
 2. **Registration:**
+
    - Should create accounts in demo mode
    - Verify JWT token is generated
 
@@ -106,10 +112,12 @@ Create `.env` file based on `.env.example` for local development.
 For deployment, set these in your platform:
 
 ### Required:
+
 - `MPESA_*` variables (for payments)
 - `JWT_SECRET` (for authentication)
 
 ### Optional:
+
 - `VITE_FIREBASE_*` variables (if using environment-specific Firebase)
 - `DB_PASSWORD` (if using database instead of demo mode)
 
