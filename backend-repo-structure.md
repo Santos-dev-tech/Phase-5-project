@@ -1,6 +1,7 @@
 # 🔧 Mealy Backend Repository Structure
 
 ## 📁 Root Structure
+
 ```
 mealy-backend/
 ├── src/
@@ -160,6 +161,7 @@ mealy-backend/
 ## 📦 Key Dependencies (package.json)
 
 ### Production Dependencies
+
 ```json
 {
   "dependencies": {
@@ -189,6 +191,7 @@ mealy-backend/
 ```
 
 ### Development Dependencies
+
 ```json
 {
   "devDependencies": {
@@ -205,6 +208,7 @@ mealy-backend/
 ```
 
 ### Python Dependencies (requirements.txt)
+
 ```
 Django==4.2.7
 djangorestframework==3.14.0
@@ -222,6 +226,7 @@ django-debug-toolbar==4.2.0
 ```
 
 ## 🚀 Scripts
+
 ```json
 {
   "scripts": {
@@ -248,6 +253,7 @@ django-debug-toolbar==4.2.0
 ## 🔧 Configuration Files
 
 ### Environment Variables (.env.example)
+
 ```env
 # Server Configuration
 NODE_ENV=development
@@ -298,6 +304,7 @@ PYTHON_SERVICE_URL=http://localhost:8000
 ```
 
 ### Docker Configuration (Dockerfile)
+
 ```dockerfile
 FROM node:18-alpine
 
@@ -316,8 +323,9 @@ CMD ["npm", "start"]
 ```
 
 ### Docker Compose (docker-compose.yml)
+
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   app:
@@ -365,6 +373,7 @@ volumes:
 ## 🗄️ Database Architecture
 
 ### PostgreSQL Schema
+
 - **users**: User authentication and profiles
 - **caterers**: Caterer information and settings
 - **meal_options**: Available meal options
@@ -375,12 +384,14 @@ volumes:
 - **notifications**: User notifications
 
 ### Redis Usage
+
 - **Session storage**: User sessions and JWT blacklist
 - **Caching**: Frequently accessed data
 - **Rate limiting**: API rate limiting data
 - **Queue management**: Background job queues
 
 ## 🔐 Security Features
+
 - **JWT authentication** with refresh tokens
 - **Rate limiting** on all endpoints
 - **Input validation** with Zod schemas
@@ -392,6 +403,7 @@ volumes:
 - **Environment variable validation**
 
 ## 🧪 Testing Strategy
+
 - **Unit tests**: Controller and service logic
 - **Integration tests**: Database operations
 - **E2E tests**: Complete API workflows
@@ -399,6 +411,7 @@ volumes:
 - **Security testing**: Vulnerability scanning
 
 ## 📊 Monitoring & Logging
+
 - **Winston logging** with structured logs
 - **Request/response logging** with Morgan
 - **Error tracking** and reporting
@@ -407,6 +420,7 @@ volumes:
 - **Metrics collection**
 
 ## 🔄 Background Jobs
+
 - **Email sending**: Async email processing
 - **Notification delivery**: Push notifications
 - **Data cleanup**: Periodic cleanup tasks
@@ -414,6 +428,7 @@ volumes:
 - **Payment verification**: Async payment checks
 
 ## 🚀 Deployment Options
+
 - **Traditional servers**: PM2 + Nginx
 - **Containerized**: Docker + Kubernetes
 - **Serverless**: Vercel, Netlify Functions

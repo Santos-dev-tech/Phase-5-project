@@ -1,6 +1,7 @@
 # 🎨 Mealy Frontend Repository Structure
 
 ## 📁 Root Structure
+
 ```
 mealy-frontend/
 ├── src/
@@ -128,6 +129,7 @@ mealy-frontend/
 ## 📦 Key Dependencies (package.json)
 
 ### Production Dependencies
+
 - **react**: ^18.3.1
 - **react-dom**: ^18.3.1
 - **react-router-dom**: ^6.26.2
@@ -144,7 +146,8 @@ mealy-frontend/
 - **date-fns**: ^3.6.0
 
 ### UI Library Dependencies
-- **@radix-ui/react-***: All Radix UI components
+
+- **@radix-ui/react-\***: All Radix UI components
 - **lucide-react**: ^0.462.0
 - **tailwindcss**: ^3.4.11
 - **class-variance-authority**: ^0.7.1
@@ -152,6 +155,7 @@ mealy-frontend/
 - **tailwind-merge**: ^2.5.2
 
 ### Development Dependencies
+
 - **vite**: ^6.2.2
 - **@vitejs/plugin-react-swc**: ^3.5.0
 - **vitest**: ^3.1.4
@@ -160,6 +164,7 @@ mealy-frontend/
 - **postcss**: ^8.5.6
 
 ## 🚀 Scripts
+
 ```json
 {
   "scripts": {
@@ -179,6 +184,7 @@ mealy-frontend/
 ## 🔧 Configuration Files
 
 ### Environment Variables (.env.example)
+
 ```env
 # API Configuration
 VITE_API_BASE_URL=http://localhost:3000/api
@@ -197,6 +203,7 @@ VITE_MPESA_ENVIRONMENT=sandbox
 ```
 
 ### Vite Configuration (vite.config.js)
+
 ```javascript
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
@@ -228,6 +235,7 @@ export default defineConfig({
 ## 🎨 Styling Configuration
 
 ### Tailwind Config (tailwind.config.js)
+
 - Pre-configured with custom color scheme
 - Includes Mealy brand colors (orange, green)
 - Dark mode support
@@ -235,6 +243,7 @@ export default defineConfig({
 - Radix UI integration
 
 ### Global Styles (src/styles/global.css)
+
 - Tailwind base, components, utilities
 - CSS custom properties for theming
 - Dark/light mode variables
@@ -243,24 +252,28 @@ export default defineConfig({
 ## 🧩 Architecture Patterns
 
 ### State Management
+
 - **Redux Toolkit** for global state
 - **React Query** for server state
 - **Context API** for theme and app-wide state
 - **Local Storage** hooks for persistence
 
 ### Component Architecture
+
 - **Atomic Design**: ui components → feature components → pages
 - **Compound Components**: For complex UI patterns
 - **Render Props**: For reusable logic
 - **Custom Hooks**: For stateful logic extraction
 
 ### Routing Strategy
+
 - **React Router v6** with data loading
 - **Protected Routes** with authentication guards
 - **Layout Routes** for consistent UI structure
 - **Error Boundaries** for graceful error handling
 
 ## 🔐 Security Features
+
 - **Environment variable validation**
 - **Input sanitization**
 - **XSS protection**
