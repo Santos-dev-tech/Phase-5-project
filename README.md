@@ -5,6 +5,7 @@ Mealy is a comprehensive food ordering application that allows customers to orde
 ## 🍽️ Features
 
 ### Required Features ✅
+
 1. **User Authentication** - Users can create accounts and log in with JWT-based authentication
 2. **Meal Management** - Admin/Caterers can add, modify, and delete meal options
 3. **Daily Menu Setup** - Admin/Caterers can set up menus for specific days
@@ -14,6 +15,7 @@ Mealy is a comprehensive food ordering application that allows customers to orde
 7. **M-Pesa Integration** - Payment processing via M-Pesa
 
 ### Extra Features 🚀
+
 1. **Order History** - Customers can view their order history
 2. **Notifications** - Users get notified when daily menus are set
 3. **Admin Order History** - Complete order management for caterers
@@ -34,42 +36,48 @@ Mealy is a comprehensive food ordering application that allows customers to orde
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - PostgreSQL 12+
 - M-Pesa Developer Account (for payment features)
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd mealy
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Database Setup**
+
    ```bash
    # Create PostgreSQL database
    createdb mealy_db
-   
+
    # Run the schema file to create tables
    psql -d mealy_db -f server/database/schema.sql
    ```
 
 4. **Environment Configuration**
+
    ```bash
    # Copy environment template
    cp .env.example .env
-   
+
    # Edit .env with your configuration
    nano .env
    ```
 
    Required environment variables:
+
    ```env
    # Database
    DB_HOST=localhost
@@ -77,10 +85,10 @@ Mealy is a comprehensive food ordering application that allows customers to orde
    DB_NAME=mealy_db
    DB_USER=postgres
    DB_PASSWORD=your_password
-   
+
    # JWT
    JWT_SECRET=your-super-secret-jwt-key
-   
+
    # M-Pesa (optional for development)
    MPESA_CONSUMER_KEY=your_key
    MPESA_CONSUMER_SECRET=your_secret
@@ -88,6 +96,7 @@ Mealy is a comprehensive food ordering application that allows customers to orde
    ```
 
 5. **Start Development Server**
+
    ```bash
    npm run dev
    ```
@@ -97,6 +106,7 @@ Mealy is a comprehensive food ordering application that allows customers to orde
 ### Default Admin Account
 
 After running the schema, you'll have a default admin account:
+
 - **Email**: admin@mealy.com
 - **Password**: admin123
 - **Role**: Admin
@@ -104,6 +114,7 @@ After running the schema, you'll have a default admin account:
 ## 📱 User Roles
 
 ### Customer
+
 - Register and login
 - View daily menus
 - Place orders
@@ -112,6 +123,7 @@ After running the schema, you'll have a default admin account:
 - Receive notifications
 
 ### Caterer
+
 - Manage meal options (add, edit, delete)
 - Set up daily menus
 - View and manage orders
@@ -119,6 +131,7 @@ After running the schema, you'll have a default admin account:
 - Multi-caterer support
 
 ### Admin
+
 - All caterer permissions
 - Manage multiple caterers
 - System-wide oversight
@@ -127,6 +140,7 @@ After running the schema, you'll have a default admin account:
 ## 🗄️ Database Schema
 
 ### Core Tables
+
 - `users` - User authentication and profiles
 - `caterers` - Caterer information (multi-caterer support)
 - `meal_options` - Available meal options
@@ -138,6 +152,7 @@ After running the schema, you'll have a default admin account:
 ## 🔧 API Endpoints
 
 ### Authentication
+
 ```
 POST /api/auth/register - User registration
 POST /api/auth/login - User login
@@ -146,6 +161,7 @@ POST /api/auth/logout - User logout
 ```
 
 ### Meals Management
+
 ```
 GET /api/meals/caterer/:catererId - Get meals for caterer
 GET /api/meals/:id - Get single meal
@@ -155,6 +171,7 @@ DELETE /api/meals/:id - Delete meal (Admin/Caterer)
 ```
 
 ### Payment (M-Pesa)
+
 ```
 POST /api/payments/mpesa/initiate - Initiate payment
 GET /api/payments/mpesa/status/:id - Check payment status
@@ -164,6 +181,7 @@ POST /api/payments/mpesa/callback - M-Pesa callback
 ## 🎨 Frontend Architecture
 
 ### State Management (Redux Toolkit)
+
 - `authSlice` - User authentication state
 - `mealsSlice` - Meal options management
 - `menusSlice` - Daily menu management
@@ -171,6 +189,7 @@ POST /api/payments/mpesa/callback - M-Pesa callback
 - `notificationsSlice` - Notifications
 
 ### Component Structure
+
 ```
 client/
 ├── components/
@@ -199,6 +218,7 @@ The application includes comprehensive M-Pesa integration for payment processing
 4. **Transaction Tracking** - Complete payment history
 
 ### M-Pesa Setup
+
 1. Register for M-Pesa Developer Account
 2. Create a sandbox application
 3. Get Consumer Key, Consumer Secret, and Pass Key
@@ -218,12 +238,14 @@ npm run test:watch
 ## 📦 Deployment
 
 ### Production Build
+
 ```bash
 npm run build
 npm start
 ```
 
 ### Environment Considerations
+
 - Set `NODE_ENV=production`
 - Use production database credentials
 - Configure production M-Pesa credentials
@@ -263,6 +285,7 @@ This project is licensed under the MIT License.
 ## 🆘 Support
 
 For support and questions:
+
 - Check the documentation
 - Create an issue on GitHub
 - Contact the development team

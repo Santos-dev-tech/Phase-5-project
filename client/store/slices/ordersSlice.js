@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   orders: [],
@@ -8,7 +8,7 @@ const initialState = {
 };
 
 const ordersSlice = createSlice({
-  name: 'orders',
+  name: "orders",
   initialState,
   reducers: {
     clearError: (state) => {
@@ -21,7 +21,9 @@ const ordersSlice = createSlice({
       state.orders.push(action.payload);
     },
     updateOrder: (state, action) => {
-      const index = state.orders.findIndex(order => order.id === action.payload.id);
+      const index = state.orders.findIndex(
+        (order) => order.id === action.payload.id,
+      );
       if (index !== -1) {
         state.orders[index] = action.payload;
       }
@@ -29,5 +31,6 @@ const ordersSlice = createSlice({
   },
 });
 
-export const { clearError, setOrders, addOrder, updateOrder } = ordersSlice.actions;
+export const { clearError, setOrders, addOrder, updateOrder } =
+  ordersSlice.actions;
 export default ordersSlice.reducer;

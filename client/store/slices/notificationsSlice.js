@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   notifications: [],
@@ -8,7 +8,7 @@ const initialState = {
 };
 
 const notificationsSlice = createSlice({
-  name: 'notifications',
+  name: "notifications",
   initialState,
   reducers: {
     clearError: (state) => {
@@ -16,7 +16,7 @@ const notificationsSlice = createSlice({
     },
     setNotifications: (state, action) => {
       state.notifications = action.payload;
-      state.unreadCount = action.payload.filter(n => !n.isRead).length;
+      state.unreadCount = action.payload.filter((n) => !n.isRead).length;
     },
     addNotification: (state, action) => {
       state.notifications.unshift(action.payload);
@@ -25,7 +25,9 @@ const notificationsSlice = createSlice({
       }
     },
     markAsRead: (state, action) => {
-      const notification = state.notifications.find(n => n.id === action.payload);
+      const notification = state.notifications.find(
+        (n) => n.id === action.payload,
+      );
       if (notification && !notification.isRead) {
         notification.isRead = true;
         state.unreadCount -= 1;
@@ -34,5 +36,6 @@ const notificationsSlice = createSlice({
   },
 });
 
-export const { clearError, setNotifications, addNotification, markAsRead } = notificationsSlice.actions;
+export const { clearError, setNotifications, addNotification, markAsRead } =
+  notificationsSlice.actions;
 export default notificationsSlice.reducer;

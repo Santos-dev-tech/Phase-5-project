@@ -5,15 +5,15 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChefHat, Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from 'react-redux';
-import { loginUser, selectAuth, clearError } from '@/store/slices/authSlice';
-import { toast } from 'sonner';
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser, selectAuth, clearError } from "@/store/slices/authSlice";
+import { toast } from "sonner";
 
 export default function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isAuthenticated, isLoading, error, user } = useSelector(selectAuth);
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -28,7 +28,10 @@ export default function Login() {
   useEffect(() => {
     // Redirect if already authenticated
     if (isAuthenticated && user) {
-      const redirectPath = user.role === 'admin' || user.role === 'caterer' ? '/admin' : '/dashboard';
+      const redirectPath =
+        user.role === "admin" || user.role === "caterer"
+          ? "/admin"
+          : "/dashboard";
       navigate(redirectPath, { replace: true });
     }
   }, [isAuthenticated, user, navigate]);
@@ -36,26 +39,26 @@ export default function Login() {
   useEffect(() => {
     // Show error toast if login fails
     if (error) {
-      toast.error(error.message || 'Login failed');
+      toast.error(error.message || "Login failed");
     }
   }, [error]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.email || !formData.password) {
-      toast.error('Please fill in all fields');
+      toast.error("Please fill in all fields");
       return;
     }
 
     try {
       const result = await dispatch(loginUser(formData));
-      
+
       if (loginUser.fulfilled.match(result)) {
-        toast.success('Login successful! Welcome back.');
+        toast.success("Login successful! Welcome back.");
       }
     } catch (err) {
-      console.error('Login error:', err);
+      console.error("Login error:", err);
     }
   };
 
@@ -100,7 +103,10 @@ export default function Login() {
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-gray-700">
+                <Label
+                  htmlFor="email"
+                  className="text-sm font-semibold text-gray-700"
+                >
                   Email Address
                 </Label>
                 <Input
@@ -117,7 +123,10 @@ export default function Login() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-semibold text-gray-700">
+                <Label
+                  htmlFor="password"
+                  className="text-sm font-semibold text-gray-700"
+                >
                   Password
                 </Label>
                 <div className="relative">
@@ -150,7 +159,9 @@ export default function Login() {
               {error && (
                 <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-sm">{error.message || 'Login failed'}</span>
+                  <span className="text-sm">
+                    {error.message || "Login failed"}
+                  </span>
                 </div>
               )}
 
@@ -165,7 +176,7 @@ export default function Login() {
                     Signing In...
                   </>
                 ) : (
-                  'Sign In'
+                  "Sign In"
                 )}
               </Button>
             </form>

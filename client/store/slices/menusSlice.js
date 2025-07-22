@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   dailyMenus: [],
@@ -8,7 +8,7 @@ const initialState = {
 };
 
 const menusSlice = createSlice({
-  name: 'menus',
+  name: "menus",
   initialState,
   reducers: {
     clearError: (state) => {

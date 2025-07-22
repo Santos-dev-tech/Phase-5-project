@@ -1,17 +1,17 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // API base URL
-const API_BASE = '/api';
+const API_BASE = "/api";
 
 // Async thunks for API calls
 export const loginUser = createAsyncThunk(
-  'auth/loginUser',
+  "auth/loginUser",
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const response = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
@@ -23,27 +23,27 @@ export const loginUser = createAsyncThunk(
       }
 
       // Store token in localStorage
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       return data;
     } catch (error) {
       return rejectWithValue({
-        error: 'Network error',
-        message: 'Failed to connect to server'
+        error: "Network error",
+        message: "Failed to connect to server",
       });
     }
-  }
+  },
 );
 
 export const registerUser = createAsyncThunk(
-  'auth/registerUser',
+  "auth/registerUser",
   async (userData, { rejectWithValue }) => {
     try {
       const response = await fetch(`${API_BASE}/auth/register`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(userData),
       });
@@ -55,31 +55,31 @@ export const registerUser = createAsyncThunk(
       }
 
       // Store token in localStorage
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       return data;
     } catch (error) {
       return rejectWithValue({
-        error: 'Network error',
-        message: 'Failed to connect to server'
+        error: "Network error",
+        message: "Failed to connect to server",
       });
     }
-  }
+  },
 );
 
 export const fetchUserProfile = createAsyncThunk(
-  'auth/fetchUserProfile',
+  "auth/fetchUserProfile",
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        return rejectWithValue({ error: 'No token found' });
+        return rejectWithValue({ error: "No token found" });
       }
 
       const response = await fetch(`${API_BASE}/auth/profile`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -92,53 +92,53 @@ export const fetchUserProfile = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue({
-        error: 'Network error',
-        message: 'Failed to fetch profile'
+        error: "Network error",
+        message: "Failed to fetch profile",
       });
     }
-  }
+  },
 );
 
 export const logoutUser = createAsyncThunk(
-  'auth/logoutUser',
+  "auth/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (token) {
         await fetch(`${API_BASE}/auth/logout`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
       }
 
       // Clear localStorage
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
 
       return {};
     } catch (error) {
       // Even if the API call fails, we still want to clear local storage
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       return {};
     }
-  }
+  },
 );
 
 // Initial state
 const initialState = {
-  user: JSON.parse(localStorage.getItem('user')) || null,
-  token: localStorage.getItem('token') || null,
+  user: JSON.parse(localStorage.getItem("user")) || null,
+  token: localStorage.getItem("token") || null,
   isLoading: false,
   error: null,
-  isAuthenticated: !!localStorage.getItem('token'),
+  isAuthenticated: !!localStorage.getItem("token"),
 };
 
 // Auth slice
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     clearError: (state) => {
@@ -149,13 +149,13 @@ const authSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
       state.error = null;
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
     updateUser: (state, action) => {
       state.user = { ...state.user, ...action.payload };
-      localStorage.setItem('user', JSON.stringify(state.user));
-    }
+      localStorage.setItem("user", JSON.stringify(state.user));
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -176,7 +176,7 @@ const authSlice = createSlice({
         state.error = action.payload;
         state.isAuthenticated = false;
       })
-      
+
       // Register cases
       .addCase(registerUser.pending, (state) => {
         state.isLoading = true;
@@ -194,7 +194,7 @@ const authSlice = createSlice({
         state.error = action.payload;
         state.isAuthenticated = false;
       })
-      
+
       // Profile fetch cases
       .addCase(fetchUserProfile.pending, (state) => {
         state.isLoading = true;
@@ -203,21 +203,21 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload.user;
         state.error = null;
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
         // If profile fetch fails due to invalid token, clear auth
-        if (action.payload?.error === 'Invalid token') {
+        if (action.payload?.error === "Invalid token") {
           state.user = null;
           state.token = null;
           state.isAuthenticated = false;
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
         }
       })
-      
+
       // Logout cases
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;

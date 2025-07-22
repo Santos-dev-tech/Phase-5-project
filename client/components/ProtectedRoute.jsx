@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { selectAuth, fetchUserProfile } from '@/store/slices/authSlice';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { selectAuth, fetchUserProfile } from "@/store/slices/authSlice";
 
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { isAuthenticated, user, isLoading } = useSelector(selectAuth);
@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   useEffect(() => {
     // If user is not authenticated, redirect to login
     if (!isAuthenticated) {
-      navigate('/login', { replace: true });
+      navigate("/login", { replace: true });
       return;
     }
 
@@ -25,15 +25,15 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     if (user && allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
       // Redirect based on user role
       switch (user.role) {
-        case 'admin':
-        case 'caterer':
-          navigate('/admin', { replace: true });
+        case "admin":
+        case "caterer":
+          navigate("/admin", { replace: true });
           break;
-        case 'customer':
-          navigate('/dashboard', { replace: true });
+        case "customer":
+          navigate("/dashboard", { replace: true });
           break;
         default:
-          navigate('/', { replace: true });
+          navigate("/", { replace: true });
       }
     }
   }, [isAuthenticated, user, allowedRoles, navigate, dispatch]);

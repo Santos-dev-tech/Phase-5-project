@@ -3,18 +3,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChefHat, Eye, EyeOff, AlertCircle, Loader2, UserCheck, Users } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  ChefHat,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  Loader2,
+  UserCheck,
+  Users,
+} from "lucide-react";
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from 'react-redux';
-import { registerUser, selectAuth, clearError } from '@/store/slices/authSlice';
-import { toast } from 'sonner';
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser, selectAuth, clearError } from "@/store/slices/authSlice";
+import { toast } from "sonner";
 
 export default function Register() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isAuthenticated, isLoading, error, user } = useSelector(selectAuth);
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -33,7 +47,10 @@ export default function Register() {
   useEffect(() => {
     // Redirect if already authenticated
     if (isAuthenticated && user) {
-      const redirectPath = user.role === 'admin' || user.role === 'caterer' ? '/admin' : '/dashboard';
+      const redirectPath =
+        user.role === "admin" || user.role === "caterer"
+          ? "/admin"
+          : "/dashboard";
       navigate(redirectPath, { replace: true });
     }
   }, [isAuthenticated, user, navigate]);
@@ -41,26 +58,26 @@ export default function Register() {
   useEffect(() => {
     // Show error toast if registration fails
     if (error) {
-      toast.error(error.message || 'Registration failed');
+      toast.error(error.message || "Registration failed");
     }
   }, [error]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validation
     if (!formData.fullName || !formData.email || !formData.password) {
-      toast.error('Please fill in all required fields');
+      toast.error("Please fill in all required fields");
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error("Passwords do not match");
       return;
     }
 
     if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters long');
+      toast.error("Password must be at least 6 characters long");
       return;
     }
 
@@ -74,12 +91,12 @@ export default function Register() {
 
     try {
       const result = await dispatch(registerUser(registrationData));
-      
+
       if (registerUser.fulfilled.match(result)) {
-        toast.success('Registration successful! Welcome to Mealy.');
+        toast.success("Registration successful! Welcome to Mealy.");
       }
     } catch (err) {
-      console.error('Registration error:', err);
+      console.error("Registration error:", err);
     }
   };
 
@@ -131,7 +148,10 @@ export default function Register() {
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-sm font-semibold text-gray-700">
+                <Label
+                  htmlFor="fullName"
+                  className="text-sm font-semibold text-gray-700"
+                >
                   Full Name *
                 </Label>
                 <Input
@@ -148,7 +168,10 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-gray-700">
+                <Label
+                  htmlFor="email"
+                  className="text-sm font-semibold text-gray-700"
+                >
                   Email Address *
                 </Label>
                 <Input
@@ -165,7 +188,10 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-sm font-semibold text-gray-700">
+                <Label
+                  htmlFor="phone"
+                  className="text-sm font-semibold text-gray-700"
+                >
                   Phone Number
                 </Label>
                 <Input
@@ -184,7 +210,11 @@ export default function Register() {
                 <Label className="text-sm font-semibold text-gray-700">
                   Account Type *
                 </Label>
-                <Select value={formData.role} onValueChange={handleRoleChange} disabled={isLoading}>
+                <Select
+                  value={formData.role}
+                  onValueChange={handleRoleChange}
+                  disabled={isLoading}
+                >
                   <SelectTrigger className="h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500">
                     <SelectValue placeholder="Select account type" />
                   </SelectTrigger>
@@ -206,7 +236,10 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-semibold text-gray-700">
+                <Label
+                  htmlFor="password"
+                  className="text-sm font-semibold text-gray-700"
+                >
                   Password *
                 </Label>
                 <div className="relative">
@@ -237,7 +270,10 @@ export default function Register() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-700">
+                <Label
+                  htmlFor="confirmPassword"
+                  className="text-sm font-semibold text-gray-700"
+                >
                   Confirm Password *
                 </Label>
                 <Input
@@ -256,7 +292,9 @@ export default function Register() {
               {error && (
                 <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-sm">{error.message || 'Registration failed'}</span>
+                  <span className="text-sm">
+                    {error.message || "Registration failed"}
+                  </span>
                 </div>
               )}
 

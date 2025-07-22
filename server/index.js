@@ -38,20 +38,22 @@ export function createServer() {
   initializeDatabase();
 
   // Middleware
-  app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:8080',
-    credentials: true
-  }));
-  app.use(express.json({ limit: '10mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+  app.use(
+    cors({
+      origin: process.env.FRONTEND_URL || "http://localhost:8080",
+      credentials: true,
+    }),
+  );
+  app.use(express.json({ limit: "10mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
   // Health check
   app.get("/api/health", (_req, res) => {
-    res.json({ 
-      status: "ok", 
+    res.json({
+      status: "ok",
       timestamp: new Date().toISOString(),
       service: "Mealy API",
-      version: "1.0.0"
+      version: "1.0.0",
     });
   });
 
@@ -95,18 +97,21 @@ export function createServer() {
 
   // Error handling middleware
   app.use((err, req, res, next) => {
-    console.error('Server error:', err);
+    console.error("Server error:", err);
     res.status(500).json({
-      error: 'Internal server error',
-      message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+      error: "Internal server error",
+      message:
+        process.env.NODE_ENV === "development"
+          ? err.message
+          : "Something went wrong",
     });
   });
 
   // 404 handler for API routes
-  app.use('/api/*', (req, res) => {
+  app.use("/api/*", (req, res) => {
     res.status(404).json({
-      error: 'Endpoint not found',
-      message: `The requested endpoint ${req.path} does not exist`
+      error: "Endpoint not found",
+      message: `The requested endpoint ${req.path} does not exist`,
     });
   });
 

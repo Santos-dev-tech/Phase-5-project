@@ -6,8 +6,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Provider } from 'react-redux';
-import { store } from './store/store';
+import { Provider } from "react-redux";
+import { store } from "./store/store";
 
 // Pages
 import Index from "./pages/Index";
@@ -51,31 +51,31 @@ const App = () => (
               />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              
+
               {/* Protected customer routes */}
               <Route
                 path="/dashboard"
                 element={
-                  <ProtectedRoute allowedRoles={['customer']}>
+                  <ProtectedRoute allowedRoles={["customer"]}>
                     <Layout>
                       <Dashboard />
                     </Layout>
                   </ProtectedRoute>
                 }
               />
-              
+
               {/* Protected admin/caterer routes */}
               <Route
                 path="/admin"
                 element={
-                  <ProtectedRoute allowedRoles={['admin', 'caterer']}>
+                  <ProtectedRoute allowedRoles={["admin", "caterer"]}>
                     <Layout>
                       <AdminDashboard />
                     </Layout>
                   </ProtectedRoute>
                 }
               />
-              
+
               {/* 404 page */}
               <Route path="*" element={<NotFound />} />
             </Routes>

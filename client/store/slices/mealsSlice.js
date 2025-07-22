@@ -1,22 +1,25 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const API_BASE = '/api';
+const API_BASE = "/api";
 
 // Async thunks for meal operations
 export const fetchMealsByCaterer = createAsyncThunk(
-  'meals/fetchMealsByCaterer',
+  "meals/fetchMealsByCaterer",
   async ({ catererId, category, available }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const params = new URLSearchParams();
-      if (category) params.append('category', category);
-      if (available !== undefined) params.append('available', available);
+      if (category) params.append("category", category);
+      if (available !== undefined) params.append("available", available);
 
-      const response = await fetch(`${API_BASE}/meals/caterer/${catererId}?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
+      const response = await fetch(
+        `${API_BASE}/meals/caterer/${catererId}?${params}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       const data = await response.json();
 
@@ -27,21 +30,21 @@ export const fetchMealsByCaterer = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue({
-        error: 'Network error',
-        message: 'Failed to fetch meals'
+        error: "Network error",
+        message: "Failed to fetch meals",
       });
     }
-  }
+  },
 );
 
 export const fetchMealById = createAsyncThunk(
-  'meals/fetchMealById',
+  "meals/fetchMealById",
   async (mealId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE}/meals/${mealId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -54,23 +57,23 @@ export const fetchMealById = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue({
-        error: 'Network error',
-        message: 'Failed to fetch meal'
+        error: "Network error",
+        message: "Failed to fetch meal",
       });
     }
-  }
+  },
 );
 
 export const createMeal = createAsyncThunk(
-  'meals/createMeal',
+  "meals/createMeal",
   async (mealData, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE}/meals`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(mealData),
       });
@@ -84,23 +87,23 @@ export const createMeal = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue({
-        error: 'Network error',
-        message: 'Failed to create meal'
+        error: "Network error",
+        message: "Failed to create meal",
       });
     }
-  }
+  },
 );
 
 export const updateMeal = createAsyncThunk(
-  'meals/updateMeal',
+  "meals/updateMeal",
   async ({ mealId, mealData }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE}/meals/${mealId}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(mealData),
       });
@@ -114,22 +117,22 @@ export const updateMeal = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue({
-        error: 'Network error',
-        message: 'Failed to update meal'
+        error: "Network error",
+        message: "Failed to update meal",
       });
     }
-  }
+  },
 );
 
 export const deleteMeal = createAsyncThunk(
-  'meals/deleteMeal',
+  "meals/deleteMeal",
   async (mealId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE}/meals/${mealId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -142,11 +145,11 @@ export const deleteMeal = createAsyncThunk(
       return { mealId, ...data };
     } catch (error) {
       return rejectWithValue({
-        error: 'Network error',
-        message: 'Failed to delete meal'
+        error: "Network error",
+        message: "Failed to delete meal",
       });
     }
-  }
+  },
 );
 
 // Initial state
@@ -160,7 +163,7 @@ const initialState = {
 
 // Meals slice
 const mealsSlice = createSlice({
-  name: 'meals',
+  name: "meals",
   initialState,
   reducers: {
     clearError: (state) => {
@@ -189,7 +192,7 @@ const mealsSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-      
+
       // Fetch meal by ID
       .addCase(fetchMealById.pending, (state) => {
         state.isLoading = true;
@@ -204,7 +207,7 @@ const mealsSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-      
+
       // Create meal
       .addCase(createMeal.pending, (state) => {
         state.isLoading = true;
@@ -219,7 +222,7 @@ const mealsSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-      
+
       // Update meal
       .addCase(updateMeal.pending, (state) => {
         state.isLoading = true;
@@ -227,11 +230,16 @@ const mealsSlice = createSlice({
       })
       .addCase(updateMeal.fulfilled, (state, action) => {
         state.isLoading = false;
-        const index = state.meals.findIndex(meal => meal.id === action.payload.mealOption.id);
+        const index = state.meals.findIndex(
+          (meal) => meal.id === action.payload.mealOption.id,
+        );
         if (index !== -1) {
           state.meals[index] = action.payload.mealOption;
         }
-        if (state.currentMeal && state.currentMeal.id === action.payload.mealOption.id) {
+        if (
+          state.currentMeal &&
+          state.currentMeal.id === action.payload.mealOption.id
+        ) {
           state.currentMeal = action.payload.mealOption;
         }
         state.error = null;
@@ -240,7 +248,7 @@ const mealsSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-      
+
       // Delete meal
       .addCase(deleteMeal.pending, (state) => {
         state.isLoading = true;
@@ -248,8 +256,13 @@ const mealsSlice = createSlice({
       })
       .addCase(deleteMeal.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.meals = state.meals.filter(meal => meal.id !== action.payload.mealId);
-        if (state.currentMeal && state.currentMeal.id === action.payload.mealId) {
+        state.meals = state.meals.filter(
+          (meal) => meal.id !== action.payload.mealId,
+        );
+        if (
+          state.currentMeal &&
+          state.currentMeal.id === action.payload.mealId
+        ) {
           state.currentMeal = null;
         }
         state.error = null;
