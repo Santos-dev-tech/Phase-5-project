@@ -150,7 +150,7 @@ export default function Layout({ children }) {
                             Dashboard
                           </Link>
                         </DropdownMenuItem>
-                        {state.user.role === "admin" && (
+                        {user.role === "admin" && (
                           <DropdownMenuItem asChild>
                             <Link
                               to="/admin"
