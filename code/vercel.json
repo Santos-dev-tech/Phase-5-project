@@ -1,12 +1,17 @@
 {
   "version": 2,
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "builds": [
     {
       "src": "dist/spa/**/*",
       "use": "@vercel/static"
     },
     {
-      "src": "api/index.js",
+      "src": "api/**/*.js",
       "use": "@vercel/node"
     }
   ],
@@ -17,7 +22,10 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/dist/spa/$1"
+      "dest": "/dist/spa/index.html"
     }
-  ]
+  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/spa",
+  "installCommand": "npm install"
 }
