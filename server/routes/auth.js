@@ -31,6 +31,13 @@ const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
+// Check if database is configured
+const isDatabaseConfigured = () => {
+  return process.env.DB_PASSWORD !== '[YOUR-PASSWORD]' &&
+         process.env.DB_PASSWORD &&
+         process.env.DB_PASSWORD !== 'postgres';
+};
+
 // Register endpoint
 router.post("/register", authLimiter, async (req, res) => {
   try {
@@ -38,6 +45,36 @@ router.post("/register", authLimiter, async (req, res) => {
     const validatedData = registerSchema.parse(req.body);
     const { email, password, fullName, phone, role } = validatedData;
 
+    // Demo mode when database is not configured
+    if (!isDatabaseConfigured()) {
+      console.log("🔄 Demo mode: Registration without database");
+
+      // Generate demo user
+      const demoUser = {
+        id: Math.floor(Math.random() * 1000),
+        email,
+        full_name: fullName,
+        role,
+        caterer_id: role === "caterer" ? Math.floor(Math.random() * 100) : null,
+      };
+
+      // Generate JWT token
+      const token = generateToken(demoUser);
+
+      return res.status(201).json({
+        message: "User registered successfully (Demo Mode)",
+        user: {
+          id: demoUser.id,
+          email: demoUser.email,
+          fullName: demoUser.full_name,
+          role: demoUser.role,
+          catererId: demoUser.caterer_id,
+        },
+        token,
+      });
+    }
+
+    // Normal database mode
     // Check if user already exists
     const existingUser = await query("SELECT id FROM users WHERE email = $1", [
       email,
